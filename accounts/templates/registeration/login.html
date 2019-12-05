@@ -6,7 +6,7 @@
 {% block page_name %}Login{% endblock page_name %}
 
 {% block content %}
-    <form method="post" action="{% url 'home' %}">
+    <form method="post" action="{% url 'after_login' %}">
     {% csrf_token %}
         {% for field in form.visible_fields %}
         <div class="form-group col-md-6" style="padding-left:0px;padding-right:0px;">

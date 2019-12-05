@@ -121,7 +121,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'after_login'
 
 
 # Static files (CSS, JavaScript, Images)
