@@ -6,7 +6,7 @@ from accounts.models import CustomUser
 # Create your models here.
 
 
-class Session(models.Model):
+class BillingSession(models.Model):
     user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='sessions')
     start = models.DateField(default=now, unique=True)
     end = models.DateField(null=True, unique=True)
