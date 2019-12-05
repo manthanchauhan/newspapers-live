@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from accounts.validators import validate_username
-# from billing_sessions.models import BillingSession
 # Create your models here.
 
 
@@ -12,6 +11,9 @@ class CustomUser(AbstractBaseUser):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=300, help_text='use at least 8 characters')
     current_session_id = models.IntegerField(unique=True, null=True)
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['username', 'email', 'password']
 
     class Meta:
         ordering = ['username']
