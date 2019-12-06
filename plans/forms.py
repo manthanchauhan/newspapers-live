@@ -9,6 +9,7 @@ class PlanCreationForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.get('user', None)
+        kwargs = dict()
         super(PlanCreationForm, self).__init__(*args, **kwargs)
 
     def save(self, commit=True):

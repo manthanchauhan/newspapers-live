@@ -13,7 +13,7 @@ def after_login(request):
         user = CustomUser.objects.get(username=request.user.username)
         print(user.plan)
     except ObjectDoesNotExist:
-        pass
+        return redirect('plans/create_plan')
     return HttpResponse('<h3>hi</h3>')
 
 

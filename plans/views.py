@@ -10,6 +10,6 @@ class CreatePlan(View, LoginRequiredMixin):
     template = 'plans/create_plan.html'
 
     def get(self, request):
-        form = PlanCreationForm
+        form = PlanCreationForm(user=request.user)
         return render(request, self.template, {'form': form})
 

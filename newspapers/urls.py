@@ -19,6 +19,7 @@ from accounts.views import after_login
 
 urlpatterns = [
     path('', after_login, name='after_login'),
+    path('plans/', include('plans.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls'))
 ]
