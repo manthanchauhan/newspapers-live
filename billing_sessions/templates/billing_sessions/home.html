@@ -1,0 +1,12 @@
+{% extends 'billing_sessions/base.html' %}
+{% load widget_tweaks %}
+{% block title %}Newspapers | Home{% endblock title %}
+
+{% block content %}
+    {% if not billing_sessions %}
+    <p class="lead text-center" style="margin-top: 15px;">No sessions found</p>
+    <div class="row justify-content-center">
+        <input class="btn btn-success" type="submit" value="Start new session">
+    </div>
+    {% endif %}
+{% endblock content %}

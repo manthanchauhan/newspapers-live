@@ -11,10 +11,10 @@ from django.core.exceptions import ObjectDoesNotExist
 def after_login(request):
     try:
         user = CustomUser.objects.get(username=request.user.username)
-        print(user.plan)
+        var = user.plan
     except ObjectDoesNotExist:
         return redirect('plans/create_plan')
-    return HttpResponse('<h3>hi</h3>')
+    return redirect('sessions/home')
 
 
 class SignUp(View):

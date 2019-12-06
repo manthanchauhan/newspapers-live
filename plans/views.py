@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 
 
-class CreatePlan(View, LoginRequiredMixin):
+class CreatePlan(LoginRequiredMixin, View):
     template = 'plans/create_plan.html'
 
     def get(self, request):
