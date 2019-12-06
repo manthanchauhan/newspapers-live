@@ -1,5 +1,6 @@
 from django.forms import ModelForm
 from plans.models import Plan
+from accounts.models import CustomUser
 
 
 class PlanCreationForm(ModelForm):

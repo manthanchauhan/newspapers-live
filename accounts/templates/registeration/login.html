@@ -6,7 +6,7 @@
 {% block page_name %}Login{% endblock page_name %}
 
 {% block content %}
-    <form method="post" action="{% url 'after_login' %}">
+    <form method="post" action="    ">
     {% csrf_token %}
         {% for field in form.visible_fields %}
         <div class="form-group col-md-6" style="padding-left:0px;padding-right:0px;">
@@ -32,4 +32,13 @@
     {% endfor %}
     <input type="submit" value="Login" class="btn btn-success">
     </form>
+    {% if form.errors %}
+        {% for error in form.non_field_errors %}
+        <span class="text-danger form-text">{{error}}</span>
+        {% endfor %}
+    {% endif %}
+    <br>
+    <p class="lead text-center">Do no have an account yet?<br>
+    Signup <a href="{% url 'signup' %}">here</a>
+    </p>
 {% endblock content %}

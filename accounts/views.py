@@ -32,6 +32,7 @@ class SignUp(View):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=password)
+            print(user)
             login(request, user)
             return redirect('after_login')
         else:
