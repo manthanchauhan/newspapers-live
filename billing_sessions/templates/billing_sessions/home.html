@@ -1,12 +1,61 @@
 {% extends 'billing_sessions/base.html' %}
 {% load widget_tweaks %}
+
+{% block extra_scripts %}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+{% endblock extra_scripts %}
+
 {% block title %}Newspapers | Home{% endblock title %}
 
 {% block content %}
     {% if not current_session %}
     <p class="lead text-center" style="margin-top: 15px;">No sessions found</p>
     <div class="row justify-content-center">
-        <input class="btn btn-success" type="submit" value="Start new session">
+        <button class="btn btn-success" data-target="#exampleModal" data-toggle="modal">
+            Start new session
+        </button>
     </div>
-    {% endif %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-body">
+                <form class="form-horizontal col-12" style="margin:0px;padding:0px;">
+                {% for field in form.visible_fields %}
+                    <div class="form-group form-row" style="margin:0px;padding:0px;">
+                        {% if field.errors %}
+                        <label class="col-2 col-form-label" style="margin-left:0px;padding-left:0px;padding-right:0px;">{{field.label_tag}}</label>
+                        {% render_field field class="form-control col-4 is-invalid" style="margin-left: 10px;" type="date"%}
+                        
+                        {% for error in field.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <label class="col-form-label" style="margin-left:0px;padding-left:0px;padding-right:0px;">{{field.label_tag}}</label>
+                        {% render_field field class="form-control col-7 col-md-5" style="margin-left: 10px;" type="date"%}
+                        
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                    <div class="col-12 row justify-content-center">
+                        <input type="submit" class="btn btn-success" value="Start Session" style="margin:10px;">
+                        <button type="button" class="btn btn-danger col-2" data-dismiss="modal" aria-label="Close" style="margin:10px;">
+                    Close
+                </button>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock content %}
