@@ -28,20 +28,9 @@
                 {% csrf_token %}
                 {% for field in form.visible_fields %}
                     <div class="form-group form-row justify-content-center" style="margin:0px;padding:0px;">
-                        {% if field.errors %}
-                        <label class="col-2 col-form-label" style="margin-left:0px;padding-left:0px;padding-right:0px;">{{field.label_tag}}</label>
-                        {% render_field field class="form-control col-4 is-invalid" style="margin-left: 10px;" type="date"%}
-                        
-                        {% for error in field.errors %}
-                        <div class="invalid-feedback">
-                            {{ error }}
-                        </div>
-                        {% endfor %}
-                        {% else %}
                         <label class="col-form-label" style="margin-left:0px;padding-left:0px;padding-right:0px;">{{field.label_tag}}</label>
                         {% render_field field class="form-control col-7 col-md-5" style="margin-left: 10px;" type="date"%}
                         
-                        {% endif %}
                         {% if field.help_text %}
                             <small class="form-text text-muted">{{ field.help_text }}</small>
                         {% endif %}
@@ -54,7 +43,15 @@
                 </button>
                     </div>
                 </form>
-                
+                <ul>
+                {% for field in form.visible_fields %}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <li class="text-danger">{{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
