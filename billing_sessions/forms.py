@@ -30,7 +30,7 @@ class SessionCreationForm(ModelForm):
 
     def clean_start(self):
         start = self.cleaned_data['start']
-        sessions = list(BillingSession.objects.all())
+        sessions = list(BillingSession.objects.filter(user=self.user))
 
         if len(sessions) == 0:
             return start

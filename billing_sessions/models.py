@@ -8,7 +8,7 @@ from accounts.models import CustomUser
 
 class BillingSession(models.Model):
     user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='sessions')
-    start = models.DateField(default=now, unique=True)
+    start = models.DateField(default=now)
     end = models.DateField(null=True, unique=True)
     absentees = models.IntegerField(default=0, validators=[MaxValueValidator(2147483647)])
     amount = models.FloatField(default=0, validators=[MinValueValidator(0)])
