@@ -37,7 +37,7 @@ class SessionCreationForm(ModelForm):
         else:
             most_recent = sessions[-1]
             if most_recent.end is None:
-                raise ValidationError('Please end your current session before starting a new one.')
+                raise ValidationError("Please end your current session before starting a new one.")
             if start < most_recent.end:
                 raise ValidationError("New session must start after the end of last session.")
             return start
