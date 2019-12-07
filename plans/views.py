@@ -12,7 +12,11 @@ class CreatePlan(LoginRequiredMixin, View):
     template = 'plans/create_plan.html'
 
     def get(self, request):
-        form = PlanCreationForm(user=request.user)
+        try:
+            plan = Plan.objects.get(user=request.user)
+            form = PlanCreationForm(instance=plan, user=request.user)
+        except ObjectDoesNotExist:
+            form = PlanCreationForm(user=request.user)
         return render(request, self.template, {'form': form})
 
     def post(self, request):
