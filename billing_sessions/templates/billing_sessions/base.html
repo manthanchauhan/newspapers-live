@@ -11,12 +11,21 @@
     <title>{% block title %}{% endblock title %}</title>
 </head>
 <body>
-<nav class="navbar navbar-expand navbar-dark bg-dark" style="margin-bottom: 15px;">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark" style="margin-bottom: 15px;">
     <div class="container">
         <a class="navbar-brand" href="#">Newspapers</a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <div id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
+        <div id="collapsibleNavbar" class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">
+                        {{ request.user.username }}
+                    </a>
+                </li>
                 <li class="nav-item">
                     {% if '/sessions/home/' == request.path %}
                     <a class="nav-link active" href="{% url 'home' %}" tabindex="-1">
@@ -53,11 +62,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}" tabindex="-1">
                         Logout
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">
-                        {{ request.user.username }}
                     </a>
                 </li>
             </ul>
