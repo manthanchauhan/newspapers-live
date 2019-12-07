@@ -2,12 +2,19 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.views import View
 from accounts.forms import SignupForm
 from django.contrib.auth import authenticate, login
+from accounts.models import CustomUser
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
 
-def home(request):
-    return HttpResponse('<h3>hi</h3>')
+def after_login(request):
+    try:
+        user = CustomUser.objects.get(username=request.user.username)
+        var = user.plan
+    except ObjectDoesNotExist:
+        return redirect('plans/create_plan')
+    return redirect('sessions/home')
 
 
 class SignUp(View):
@@ -25,7 +32,8 @@ class SignUp(View):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=password)
+            print(user)
             login(request, user)
-            return redirect('home')
+            return redirect('after_login')
         else:
             return render(request, self.template, {'form': form})

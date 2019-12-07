@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}{% endblock title %}</title>
+</head>
+<body>
+<nav class="navbar navbar-expand navbar-dark bg-dark" style="margin-bottom: 15px;">
+    <div class="container">
+        <a class="navbar-brand" href="#">Newspapers</a>
+
+        <div id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    {% if '/sessions/home/' == request.path %}
+                    <a class="nav-link active" href="{% url 'home' %}" tabindex="-1">
+                        Home
+                    </a>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'home' %}" tabindex="-1">
+                        Home
+                    </a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if 'sessions/all/' == request.path %}
+                    <a class="nav-link active" href="#" tabindex="-1">
+                        All Sessions
+                    </a>
+                    {% else %}
+                    <a class="nav-link" href="#" tabindex="-1">
+                        All Sessions
+                    </a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if '/plans/edit/' == request.path %}
+                    <a class="nav-link" href="{% url 'edit_plan' %}" tabindex="-1">
+                        Edit Plan
+                    </a>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'edit_plan' %}" tabindex="-1">
+                        Edit Plan
+                    </a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}" tabindex="-1">
+                        Logout
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">
+                        {{ request.user.username }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+{% block content %}
+{% endblock content %}
+</div>
+</body>
+</html>

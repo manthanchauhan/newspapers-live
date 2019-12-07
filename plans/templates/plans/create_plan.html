@@ -1,0 +1,39 @@
+{% extends 'plans/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Newspapers | Plan{% endblock title %}
+
+{% block content %}
+<div class="container" style="">
+    <p class="lead text-center">Please upload your weekly newspaper plan.</p>
+    <p class="form-text text-center text-danger">Please enter the costs in Rs.</p><br>
+    
+    <form class="form-horizontal" method="post" action="{% url 'create_plan' %}">
+        {% csrf_token %}
+        {% for field in form.visible_fields %}
+        <div class="form-row form-group justify-content-center">
+            {% if field.errors %}
+            <label class="col-form-label col-3 col-md-2">{{field.label_tag}}</label>
+                {% render_field field class="form-control col-7 col-md-4 is-invalid" %}
+                {% for error in field.errors %}
+                <div class="invalid-feedback">
+                    {{ error }}
+                </div>
+                {% endfor %}
+            {% else %}
+            <label class="col-form-label col-3 col-md-2" style="margin-right:10px;">{{field.label_tag}}</label>
+                {% render_field field class="form-control col-7 col-md-4" %}
+            {% endif %}
+            {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <div class="row justify-content-center">
+            <input type="submit" class="btn btn-success" value="Submit">
+            <div class="col-1"></div>
+            <input class="btn btn-danger" type="submit" value="Clear">
+        </div>
+    </form>
+</div>
+{% endblock content %}

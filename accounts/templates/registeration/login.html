@@ -1,17 +1,16 @@
 {% extends 'accounts/base.html' %}
 {% load widget_tweaks %}
 
-{% block title %}Newspapers | Signup{% endblock title %}
+{% block title %}Newspapers | Login{% endblock title %}
 
-{% block page_name %} Signup {% endblock page_name %}
+{% block page_name %}Login{% endblock page_name %}
 
 {% block content %}
-<form method="post" action="{% url 'signup' %}">
+    <form method="post" action="    ">
     {% csrf_token %}
+        {% for field in form.visible_fields %}
+        <div class="form-group col-md-6" style="padding-left:0px;padding-right:0px;">
     
-    {% for field in form.visible_fields %}
-    <div class="form-group col-md-6" style="padding-left:0px;padding-right:0px;">
-
     {% if field.errors %}
         <label class="col-12" style="margin-left:0px;padding-left:0px;padding-right:0px;">{{field.label_tag}}
             {% render_field field class="form-control is-invalid" %}
@@ -31,10 +30,15 @@
     {% endif %}
     </div>
     {% endfor %}
-    <input type="submit" value="Signup" class="btn btn-success">
-</form>
-<br>
-<hr>
-<p class="lead text-center">Already have an account?<br>
-Login <a href="{% url 'login' %}">here</a></p>
+    <input type="submit" value="Login" class="btn btn-success">
+    </form>
+    {% if form.errors %}
+        {% for error in form.non_field_errors %}
+        <span class="text-danger form-text">{{error}}</span>
+        {% endfor %}
+    {% endif %}
+    <br>
+    <p class="lead text-center">Do no have an account yet?<br>
+    Signup <a href="{% url 'signup' %}">here</a>
+    </p>
 {% endblock content %}
