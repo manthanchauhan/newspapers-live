@@ -40,3 +40,4 @@ class EditPlan(LoginRequiredMixin, View):
         plan = request.user.plan
         form = PlanCreationForm(instance=plan, user=request.user)
         return render(request, self.template, {'form': form})
+
