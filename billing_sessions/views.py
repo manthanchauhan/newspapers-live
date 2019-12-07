@@ -8,16 +8,20 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class Home(LoginRequiredMixin, View):
-    tempate = 'billing_sessions/home.html'
+    template = 'billing_sessions/home.html'
 
     def get(self, request):
         user = request.user
         current_session = None
         if user.current_session_id is not None:
             current_session = BillingSession.objects.get(id=user.current_session_id)
-            return render(request, self.tempate, {'current_session': current_session})
+            return render(request, self.template, {'current_session': current_session})
 
         form = SessionCreationForm(user=request.user)
-        return render(request, self.tempate, {'current_session': current_session,
+        return render(request, self.template, {'current_session': current_session,
                                               'form': form})
+
+    def post(self, request):
+        print(request.POST)
+
 
