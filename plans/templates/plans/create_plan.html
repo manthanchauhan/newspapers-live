@@ -8,7 +8,7 @@
     <p class="lead text-center">Please upload your weekly newspaper plan.</p>
     <p class="form-text text-center text-danger">Please enter the costs in Rs.</p><br>
     
-    <form class="form-horizontal" method="post" action="">
+    <form class="form-horizontal" method="post" action="{% url 'create_plan' %}">
         {% csrf_token %}
         {% for field in form.visible_fields %}
         <div class="form-row form-group justify-content-center">

@@ -14,6 +14,39 @@
         <div id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
+                    {% if '/sessions/home/' == request.path %}
+                    <a class="nav-link active" href="{% url 'home' %}" tabindex="-1">
+                        Home
+                    </a>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'home' %}" tabindex="-1">
+                        Home
+                    </a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if 'sessions/all/' == request.path %}
+                    <a class="nav-link active" href="#" tabindex="-1">
+                        All Sessions
+                    </a>
+                    {% else %}
+                    <a class="nav-link" href="#" tabindex="-1">
+                        All Sessions
+                    </a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    {% if '/plans/edit/' == request.path %}
+                    <a class="nav-link" href="{% url 'edit_plan' %}" tabindex="-1">
+                        Edit Plan
+                    </a>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'edit_plan' %}" tabindex="-1">
+                        Edit Plan
+                    </a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}" tabindex="-1">
                         Logout
                     </a>

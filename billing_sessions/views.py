@@ -11,5 +11,7 @@ class Home(LoginRequiredMixin, View):
 
     def get(self, request):
         user = request.user
-        billing_sessions = list(BillingSession.objects.all().filter(user=user))
-        return render(request, self.tempate, {'billing_sessions': billing_sessions})
+        current_session = None
+        if user.current_session_id is not None:
+            current_session = BillingSession.objects.get(id=user.current_session_id)
+        return render(request, self.tempate, {'current_session': current_session})

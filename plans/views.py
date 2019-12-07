@@ -1,7 +1,9 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from plans.forms import PlanCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from plans.models import Plan
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
@@ -14,11 +16,23 @@ class CreatePlan(LoginRequiredMixin, View):
         return render(request, self.template, {'form': form})
 
     def post(self, request):
+        try:
+            Plan.objects.get(user=request.user).delete()
+        except ObjectDoesNotExist:
+            pass
         form = PlanCreationForm(request.POST, user=request.user)
 
         if form.is_valid():
             form.save()
-            return HttpResponse('<h2>Your plan has been saved</h2>')
+            return redirect('/sessions/home')
         else:
             return render(request, self.template, {'form': form})
 
+
+class EditPlan(LoginRequiredMixin, View):
+    template = 'plans/create_plan.html'
+
+    def get(self, request):
+        plan = request.user.plan
+        form = PlanCreationForm(instance=plan, user=request.user)
+        return render(request, self.template, {'form': form})

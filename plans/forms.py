@@ -10,8 +10,13 @@ class PlanCreationForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.get('user', None)
-        kwargs = dict()
-        super(PlanCreationForm, self).__init__(*args, **kwargs)
+        kwargs2 = dict()
+
+        for key, value in kwargs.items():
+            if key != 'user':
+                kwargs2[key] = value
+
+        super(PlanCreationForm, self).__init__(*args, **kwargs2)
 
     def save(self, commit=True):
         plan = super(PlanCreationForm, self).save(commit=False)
