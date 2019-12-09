@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'plans',
     'billing_sessions',
     'widget_tweaks',
+    'calendars',
 ]
 
 MIDDLEWARE = [
