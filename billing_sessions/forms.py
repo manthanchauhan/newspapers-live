@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from django.forms import ValidationError
 from datetime import datetime
 from django.contrib import messages
+from billing_sessions.functions import create_calendars
 from billing_sessions.models import BillingSession
 
 
@@ -28,14 +29,19 @@ class SessionCreationForm(ModelForm):
         session = super(SessionCreationForm, self).save(commit=False)
         session.user = self.user
         session.save()
+        create_calendars(self.cleaned_data['start'], session)
+        self.user.current_session_id = session.id
+        self.user.save()
 
     def clean_start(self):
         start = self.cleaned_data['start']
 
         now = datetime.now()
         month_diff = (now.year - start.year)*12 + now.month - start.month
+
         if month_diff >= 12:
             raise ValidationError('Start date must be within 12 months of present date')
+
         sessions = list(BillingSession.objects.filter(user=self.user))
 
         if len(sessions) == 0:
