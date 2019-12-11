@@ -253,9 +253,9 @@
 							{% elif day.status == "active" %}
 							<td><button class="btn date btn-success col-12">{{day.date}}</button></td>
 							{% elif day.status == "future" %}
-							<td><button class="btn date btn-primary col-12" disabled>{{day.date}}</button></td>
+							<td><button class="btn date btn-warning col-12" disabled>{{day.date}}</button></td>
 							{% elif day.status == "not-included" %}
-							<td><button class="btn date btn-primary col-12" disabled>{{day.date}}</button></td>
+							<td><button class="btn date btn-warning col-12" disabled>{{day.date}}</button></td>
 							{% endif %}
 						{% endfor %}
 					</tr>

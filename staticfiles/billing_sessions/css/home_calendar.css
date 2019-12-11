@@ -1,0 +1,11 @@
+.table td {
+	padding: 0px;
+}
+
+.date {
+	border-radius: 0px;
+}
+
+/*thead tr {
+	border-bottom: 10px solid white;
+}*/
