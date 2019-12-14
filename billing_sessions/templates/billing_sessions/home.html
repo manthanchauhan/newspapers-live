@@ -93,7 +93,8 @@
 				{% endfor %}
 				</tbody>
 			</table>
-			<p>Currently your bill is: <b>Rs. 42</b></p>
+			<p>Currently your bill is: <b>Rs. {{amount}}</b><br>
+				This month: <b>Rs. {{monthly_amount}}</b></p>
 		<form>
 			<input type="submit" class="btn btn-success" value="End Session">
 		</form>

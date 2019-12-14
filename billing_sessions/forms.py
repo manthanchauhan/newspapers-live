@@ -29,7 +29,9 @@ class SessionCreationForm(ModelForm):
         session = super(SessionCreationForm, self).save(commit=False)
         session.user = self.user
         session.save()
-        create_calendars(self.cleaned_data['start'], session)
+        amount = create_calendars(self.cleaned_data['start'], session)
+        session.amount = amount
+        session.save()
         self.user.current_session_id = session.id
         self.user.save()
 

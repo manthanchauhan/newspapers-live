@@ -14,3 +14,14 @@ class Plan(models.Model):
     saturday = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(100)])
 
     user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='plan')
+
+    def to_dict(self):
+        return {
+            'sunday': self.sunday,
+            'monday': self.monday,
+            'tuesday': self.tuesday,
+            'wednesday': self.wednesday,
+            'thursday': self.thursday,
+            'friday': self.friday,
+            'saturday': self.saturday,
+        }

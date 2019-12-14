@@ -1,8 +1,44 @@
 from datetime import datetime
 from calendars.models import Calendar
+from calendar import monthrange
+from plans.models import Plan
+
+
+def calculate_bill(calendar, bill):
+    if calendar.start > datetime.now().date():
+        raise ValueError
+
+    costs = bill.to_dict()
+    start_day = calendar.start.day
+
+    if calendar.end is not None:
+        end_day = calendar.end.day
+    else:
+        end_day = datetime.now().day
+
+    total_days = end_day - start_day + 1
+    # print(start_day, end_day, total_days)
+    amount = 0
+
+    for value in costs.values():
+        amount += value*(total_days//7)
+
+    days_left = total_days % 7
+    day_name = calendar.start.weekday()+1
+    # print('first', days_left, day_name)
+
+    while days_left > 0:
+        amount += list(costs.values())[day_name]
+        days_left -= 1
+        day_name += 1
+        day_name %= 7
+
+    # print(calendar.start.month, calendar.start.year, amount)
+    return amount
 
 
 def create_calendars(start_date, session):
+    session_amount = 0
     present_date = datetime.now()
     calendars = list()
 
@@ -18,12 +54,33 @@ def create_calendars(start_date, session):
             calendars.append((month, start_date.year))
 
     first_calendar = Calendar(session=session, start=start_date)
+
+    if datetime.now().month != first_calendar.start.month or datetime.now().year != first_calendar.start.month:
+        end = monthrange(first_calendar.start.year, first_calendar.start.month)[1]
+        end = datetime.strptime(str(end) + '-' + str(first_calendar.start.month) + '-' + str(first_calendar.start.year), '%d-%m-%Y').date()
+        first_calendar.end = end
+
+    plan = Plan.objects.get(user=session.user)
+    amount = calculate_bill(first_calendar, plan)
+    session_amount += amount
+    first_calendar.amount = amount
     first_calendar.save()
 
     if len(calendars) > 1:
         for calendar in calendars[1:]:
-            start = datetime.strptime('01-' + str(calendar[0]) + '-' + str(calendar[1]), '%d-%m-%Y')
-            Calendar(session=session, start=start).save()
+            start = datetime.strptime('01-' + str(calendar[0]) + '-' + str(calendar[1]), '%d-%m-%Y').date()
+            cal = Calendar(session=session, start=start)
+
+            if calendar != calendars[-1]:
+                end = monthrange(calendar[1], calendar[0])[1]
+                end = datetime.strptime(str(end) + '-' + str(calendar[0]) + '-' + str(calendar[1]), '%d-%m-%Y').date()
+                cal.end = end
+
+            cal.amount = calculate_bill(cal, plan)
+            session_amount += cal.amount
+            cal.save()
+
+    return session_amount
 
 
 class Counter:

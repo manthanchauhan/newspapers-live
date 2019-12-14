@@ -5,7 +5,8 @@ from billing_sessions.models import BillingSession
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 from calendar import monthrange
-from billing_sessions.functions import create_calendars, Counter
+from plans.models import Plan
+from billing_sessions.functions import create_calendars, calculate_bill
 
 # Create your views here.
 
@@ -18,7 +19,14 @@ class Home(LoginRequiredMixin, View):
         current_session = None
 
         if user.current_session_id is not None:
-            current_session = BillingSession.objects.get(id=user.current_session_id)
+            try:
+                current_session = BillingSession.objects.get(id=user.current_session_id)
+            except BillingSession.DoesNotExist:
+                user.current_session_id = None
+                user.save()
+
+        if user.current_session_id is not None:
+            amount = current_session.amount
             calendars = list(current_session.calendars.all())
             present_date = datetime.now()
             last_month = calendars[-1].start.month
@@ -34,6 +42,9 @@ class Home(LoginRequiredMixin, View):
 
             calendars = list(current_session.calendars.all())
             calendar = calendars[-1]
+            plan = Plan.objects.get(user=user)
+            monthly_amount = calculate_bill(calendar, plan)
+            calendar.amount = monthly_amount
             start_date = calendar.start
             empty_days = (start_date.replace(day=1).weekday()+1) % 7
             total_days = monthrange(start_date.year, start_date.month)[1]
@@ -55,6 +66,8 @@ class Home(LoginRequiredMixin, View):
             return render(request, self.template, {'current_session': current_session,
                                                    'days': days,
                                                    'date': calendars[0].start.strftime('%d/%m/%y'),
+                                                   'amount': amount,
+                                                   'monthly_amount': monthly_amount,
                                                    })
 
         form = SessionCreationForm(user=request.user)
