@@ -5,6 +5,7 @@
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/a6397ddafb.js" crossorigin="anonymous"></script>
 {% endblock extra_scripts %}
 
 {% block title %}Newspapers | Home{% endblock title %}
@@ -63,6 +64,8 @@
 
 		<div class="justify-content-center">
 			<div class="container col-md-6" style="padding: 0px;">
+<!--			<h3 style="background-color:#292b2c;color:white;padding:3px;" class="col-2">{{month_name}}'{{year_name}}</h3>-->
+			<h4>{{month_name}}'{{year_name}}</h4>
 			<table class="table">
 				<thead class="thead-dark">
 				<tr>
@@ -93,8 +96,38 @@
 				{% endfor %}
 				</tbody>
 			</table>
-			<p>Currently your bill is: <b>Rs. {{amount}}</b><br>
-				This month: <b>Rs. {{monthly_amount}}</b></p>
+			<div class="row justify-content-center">
+				<form style="margin-right:15px;" method="post">
+					{% csrf_token %}
+					{% if prev %}
+					<button type="submit" class="btn" name="prev" value="{{prev}}">
+						<i class="fas fa-arrow-circle-left fa-2x" style="color:blue"></i>
+					</button>
+					{% else %}
+					<button type="submit" class="btn" name="prev" value="{{prev}}" disabled>
+						<i class="fas fa-arrow-circle-left fa-2x" style="color:blue"></i>
+					</button>
+					{% endif %}
+				</form>
+				<form style="margin-left:15px;" method="post">
+					{% csrf_token %}
+					
+					{% if next %}
+					<button type="submit" class="btn" name="next" value="{{next}}">
+						<i class="fas fa-arrow-circle-right fa-2x" style="color:blue"></i>
+					</button>
+					{% else %}
+					<button type="submit" class="btn" name="next" value="{{next}}" disabled>
+						<i class="fas fa-arrow-circle-right fa-2x" style="color:blue"></i>
+					</button>
+					{% endif %}
+				</form>
+			</div>
+			
+			<p style="margin-top:16px;">Currently your bill is: <b>Rs. {{amount}}</b><br>
+				This month: <b>Rs. {{monthly_amount}}</b>
+			</p>
+			
 		<form>
 			<input type="submit" class="btn btn-success" value="End Session">
 		</form>

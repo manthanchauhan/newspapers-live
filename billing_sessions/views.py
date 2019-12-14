@@ -6,7 +6,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 from calendar import monthrange
 from plans.models import Plan
-from billing_sessions.functions import create_calendars, calculate_bill
+from calendars.models import Calendar
+from billing_sessions.functions import create_calendars, calculate_bill, previous_calendar
+from billing_sessions.functions import next_calendar, month_name
 
 # Create your views here.
 
@@ -14,7 +16,7 @@ from billing_sessions.functions import create_calendars, calculate_bill
 class Home(LoginRequiredMixin, View):
     template = 'billing_sessions/home.html'
 
-    def get(self, request):
+    def get(self, request, id=None):
         user = request.user
         current_session = None
 
@@ -28,23 +30,44 @@ class Home(LoginRequiredMixin, View):
         if user.current_session_id is not None:
             amount = current_session.amount
             calendars = list(current_session.calendars.all())
-            present_date = datetime.now()
-            last_month = calendars[-1].start.month
-            last_year = calendars[-1].start.year
 
-            if last_month != present_date.month or last_year != present_date.year:
-                if last_month == 12:
-                    start_date = datetime.strptime('01-' + str(1) + '-' + str(last_year+1))
-                else:
-                    start_date = datetime.strptime('01-' + str(last_month+1) + '-' + str(last_year))
+            if id is not None:
+                calendar = Calendar.objects.get(id=id)
+                monthly_amount = calendar.amount
+            else:
+                present_date = datetime.now()
+                last_month = calendars[-1].start.month
+                last_year = calendars[-1].start.year
 
-                create_calendars(start_date, current_session)
+                if last_month != present_date.month or last_year != present_date.year:
+                    if last_month == 12:
+                        start_date = datetime.strptime('01-' + str(1) + '-' + str(last_year+1))
+                    else:
+                        start_date = datetime.strptime('01-' + str(last_month+1) + '-' + str(last_year))
 
-            calendars = list(current_session.calendars.all())
-            calendar = calendars[-1]
-            plan = Plan.objects.get(user=user)
-            monthly_amount = calculate_bill(calendar, plan)
-            calendar.amount = monthly_amount
+                    create_calendars(start_date, current_session)
+
+                calendars = list(current_session.calendars.all())
+                calendar = calendars[-1]
+
+                plan = Plan.objects.get(user=user)
+                monthly_amount = calculate_bill(calendar, plan)
+                calendar.amount = monthly_amount
+
+            prev = previous_calendar(calendar, calendars)
+
+            if prev is not None:
+                prev_id = prev.id
+            else:
+                prev_id = None
+
+            next = next_calendar(calendar, calendars)
+
+            if next is not None:
+                next_id = next.id
+            else:
+                next_id = None
+
             start_date = calendar.start
             empty_days = (start_date.replace(day=1).weekday()+1) % 7
             total_days = monthrange(start_date.year, start_date.month)[1]
@@ -60,21 +83,37 @@ class Home(LoginRequiredMixin, View):
                 elif day <= today:
                     days.append({'date': day, 'status': 'active'})
                 else:
-                    days.append({'date': day, 'status': 'future'})
+                    if calendar.end is None:
+                        days.append({'date': day, 'status': 'future'})
+                    else:
+                        days.append({'date': day, 'status': 'active'})
 
-            days = [days[0:7], days[7:14], days[14:21], days[21:28], days[28:]]
+            if len(days) > 35:
+                days = [days[0:7], days[7:14], days[14:21], days[21:28], days[28:35], days[35:]]
+            else:
+                days = [days[0:7], days[7:14], days[14:21], days[21:28], days[28:]]
             return render(request, self.template, {'current_session': current_session,
                                                    'days': days,
                                                    'date': calendars[0].start.strftime('%d/%m/%y'),
                                                    'amount': amount,
                                                    'monthly_amount': monthly_amount,
+                                                   'prev': prev_id,
+                                                   'next': next_id,
+                                                   'month_name': month_name(calendar.start.month),
+                                                   'year_name': str(calendar.start.year)[-2:],
                                                    })
 
         form = SessionCreationForm(user=request.user)
         return render(request, self.template, {'current_session': current_session,
                                                'form': form})
 
-    def post(self, request):
+    def post(self, request, id=None):
+        if 'prev' in request.POST.keys():
+            return redirect('calendar', id=request.POST['prev'])
+
+        if 'next' in request.POST.keys():
+            return redirect('calendar', id=request.POST['next'])
+
         form = SessionCreationForm(request.POST, user=request.user)
 
         if form.is_valid():
@@ -84,4 +123,6 @@ class Home(LoginRequiredMixin, View):
             return render(request, self.template, {'form': form})
 
 
-
+def try_func(request, id):
+    print(id)
+    return None

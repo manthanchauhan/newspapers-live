@@ -24,7 +24,7 @@ def calculate_bill(calendar, bill):
         amount += value*(total_days//7)
 
     days_left = total_days % 7
-    day_name = calendar.start.weekday()+1
+    day_name = (calendar.start.weekday()+1) % 7
     # print('first', days_left, day_name)
 
     while days_left > 0:
@@ -81,6 +81,47 @@ def create_calendars(start_date, session):
             cal.save()
 
     return session_amount
+
+
+def previous_calendar(calendar, calendars):
+    if not len(calendars):
+        return None
+
+    if calendar == calendars[0]:
+        return None
+
+    for index, cal in enumerate(calendars):
+        if cal == calendar:
+            return calendars[index-1]
+
+
+def next_calendar(calendar, calendars):
+    if not len(calendars):
+        return None
+
+    if calendar == calendars[-1]:
+        return None
+
+    for index, cal in enumerate(calendars):
+        if cal == calendar:
+            return calendars[index+1]
+
+
+def month_name(month):
+    return {
+        1: 'Jan',
+        2: 'Feb',
+        3: 'Mar',
+        4: 'Apr',
+        5: 'May',
+        6: 'Jun',
+        7: 'Jul',
+        8: 'Aug',
+        9: 'Sep',
+        10: 'Oct',
+        11: 'Nov',
+        12: 'Dec'
+    }[month]
 
 
 class Counter:
