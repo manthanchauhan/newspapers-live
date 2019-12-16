@@ -8,7 +8,7 @@ from calendar import monthrange
 from plans.models import Plan
 from calendars.models import Calendar
 from billing_sessions.functions import create_calendars, calculate_bill, previous_calendar
-from billing_sessions.functions import next_calendar, month_name
+from billing_sessions.functions import next_calendar, month_name, toggle_absent_status
 
 # Create your views here.
 
@@ -53,7 +53,9 @@ class Home(LoginRequiredMixin, View):
                 plan = Plan.objects.get(user=user)
                 monthly_amount = calculate_bill(calendar, plan)
                 calendar.amount = monthly_amount
+                calendar.save()
 
+            calendar_id = calendar.id
             prev = previous_calendar(calendar, calendars)
 
             if prev is not None:
@@ -79,14 +81,23 @@ class Home(LoginRequiredMixin, View):
             today = datetime.now().day
             for day in range(1, total_days+1):
                 if day < start_date.day:
-                    days.append({'date': day, 'status': 'not-included'})
+                    days.append({'date': day, 'status': 'not-included', 'absent': False})
                 elif day <= today:
-                    days.append({'date': day, 'status': 'active'})
+                    days.append({'date': day, 'status': 'active', 'absent': False})
                 else:
                     if calendar.end is None:
-                        days.append({'date': day, 'status': 'future'})
+                        days.append({'date': day, 'status': 'future', 'absent': False})
                     else:
-                        days.append({'date': day, 'status': 'active'})
+                        days.append({'date': day, 'status': 'active', 'absent': False})
+
+            absentees = calendar.absentees
+            i = 0
+
+            while absentees:
+                bit = absentees % 2
+                days[empty_days+i]['absent'] = bool(bit)
+                absentees >>= 1
+                i += 1
 
             if len(days) > 35:
                 days = [days[0:7], days[7:14], days[14:21], days[21:28], days[28:35], days[35:]]
@@ -98,6 +109,7 @@ class Home(LoginRequiredMixin, View):
                                                    'amount': amount,
                                                    'monthly_amount': monthly_amount,
                                                    'prev': prev_id,
+                                                   'calendar_id': calendar_id,
                                                    'next': next_id,
                                                    'month_name': month_name(calendar.start.month),
                                                    'year_name': str(calendar.start.year)[-2:],
@@ -113,6 +125,12 @@ class Home(LoginRequiredMixin, View):
 
         if 'next' in request.POST.keys():
             return redirect('calendar', id=request.POST['next'])
+
+        if 'date' in request.POST.keys():
+            date = request.POST['date']
+            calendar_id = request.POST['calendar_id']
+            toggle_absent_status(calendar_id, date, request.user)
+            return redirect('calendar', id=calendar_id)
 
         form = SessionCreationForm(request.POST, user=request.user)
 

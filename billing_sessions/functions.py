@@ -8,7 +8,7 @@ def calculate_bill(calendar, bill):
     if calendar.start > datetime.now().date():
         raise ValueError
 
-    costs = bill.to_dict()
+    costs = list(bill.to_dict().values())
     start_day = calendar.start.day
 
     if calendar.end is not None:
@@ -16,25 +16,46 @@ def calculate_bill(calendar, bill):
     else:
         end_day = datetime.now().day
 
-    total_days = end_day - start_day + 1
-    # print(start_day, end_day, total_days)
+    day = start_day
     amount = 0
+    day_name = (datetime(year=calendar.start.year, month=calendar.start.month, day=day).weekday()+1) % 7
+    absentees = calendar.absentees
+    for i in range(0, day-1):
+        absentees >>= 1
 
-    for value in costs.values():
-        amount += value*(total_days//7)
+    while day <= end_day:
+        bit = absentees % 2
+        if not bit:
+            amount += costs[day_name]
 
-    days_left = total_days % 7
-    day_name = (calendar.start.weekday()+1) % 7
-    # print('first', days_left, day_name)
-
-    while days_left > 0:
-        amount += list(costs.values())[day_name]
-        days_left -= 1
+        day += 1
         day_name += 1
         day_name %= 7
+        absentees >>= 1
 
-    # print(calendar.start.month, calendar.start.year, amount)
     return amount
+
+
+def toggle_absent_status(calendar_id, date, user):
+    cal = Calendar.objects.get(id=calendar_id)
+    absentees = cal.absentees
+    date_bit = int(date)-1
+    modifier = 2**date_bit
+    absentees ^= modifier
+    cal.absentees = absentees
+    plan = Plan.objects.get(user=user)
+    cal.amount = calculate_bill(cal, plan)
+    cal.save()
+
+    session = cal.session
+    calendars = session.calendars.all()
+    amount = 0
+
+    for cal in calendars:
+        amount += cal.amount
+
+    session.amount = amount
+    session.save()
 
 
 def create_calendars(start_date, session):

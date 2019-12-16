@@ -67,7 +67,7 @@
 <!--			<h3 style="background-color:#292b2c;color:white;padding:3px;" class="col-2">{{month_name}}'{{year_name}}</h3>-->
 			<h4>{{month_name}}'{{year_name}}</h4>
 			<table class="table">
-				<thead class="thead-dark">
+				<thead class="thead-dark text-center">
 				<tr>
 					<th scope="col" style="width: 14.2857143%">Sun</th>
 					<th scope="col" style="width: 14.2857143%">Mon</th>
@@ -79,21 +79,29 @@
 				</tr>
 				</thead>
 				<tbody>
-				{% for row in days %}
-					<tr>
-						{% for day in row %}
-							{% if day.status == "disabled" %}
-							<td><button class="btn date btn-disabled col-12"></button></td>
-							{% elif day.status == "active" %}
-							<td><button class="btn date btn-success col-12">{{day.date}}</button></td>
-							{% elif day.status == "future" %}
-							<td><button class="btn date btn-warning col-12" disabled>{{day.date}}</button></td>
-							{% elif day.status == "not-included" %}
-							<td><button class="btn date btn-warning col-12" disabled>{{day.date}}</button></td>
-							{% endif %}
-						{% endfor %}
-					</tr>
-				{% endfor %}
+					<form method="post">
+					{% csrf_token %}
+						<input type="number" name="calendar_id" value="{{calendar_id}}" hidden>
+					{% for row in days %}
+						<tr style="margin:0px;">
+							{% for day in row %}
+								{% if day.status == "disabled" %}
+								<td><button class="h-100 btn-block btn date btn-warning col-12 text-muted" disabled>*</button></td>
+								{% elif day.status == "active" %}
+									{% if not day.absent %}
+										<td><button type="submit" name="date" value="{{day.date}}" class="btn date btn-success col-12">{{day.date}}</button></td>
+									{% else %}
+										<td><button type="submit" name="date" value="{{day.date}}" class="btn date btn-danger col-12">{{day.date}}</button></td>
+									{% endif %}
+								{% elif day.status == "future" %}
+								<td><button class="btn date btn-warning col-12" disabled>{{day.date}}</button></td>
+								{% elif day.status == "not-included" %}
+								<td><button class="btn date btn-warning col-12" disabled>{{day.date}}</button></td>
+								{% endif %}
+							{% endfor %}
+						</tr>
+					{% endfor %}
+					</form>
 				</tbody>
 			</table>
 			<div class="row justify-content-center">
