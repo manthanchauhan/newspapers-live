@@ -17,7 +17,7 @@ class CreatePlan(LoginRequiredMixin, View):
             form = PlanCreationForm(instance=plan, user=request.user)
         except ObjectDoesNotExist:
             form = PlanCreationForm(user=request.user)
-        return render(request, self.template, {'form': form, 'editable': True})
+        return render(request, self.template, {'form': form, 'editable': True, 'new': True})
 
     def post(self, request):
         try:
@@ -30,7 +30,7 @@ class CreatePlan(LoginRequiredMixin, View):
             form.save()
             return redirect('/sessions/home')
         else:
-            return render(request, self.template, {'form': form, 'editable': True})
+            return render(request, self.template, {'form': form, 'editable': True, 'new': True})
 
 
 class EditPlan(LoginRequiredMixin, View):
@@ -40,5 +40,5 @@ class EditPlan(LoginRequiredMixin, View):
         current_session_id = not bool(request.user.current_session_id)
         plan = request.user.plan
         form = PlanCreationForm(instance=plan, user=request.user)
-        return render(request, self.template, {'form': form, 'editable': current_session_id})
+        return render(request, self.template, {'form': form, 'editable': current_session_id, 'new': False})
 
