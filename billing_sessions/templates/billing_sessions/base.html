@@ -5,9 +5,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
 <!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
-    
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/a6397ddafb.js" crossorigin="anonymous"></script>
     {% block extra_scripts %}
-    
     {% endblock extra_scripts %}
     <title>{% block title %}{% endblock title %}</title>
 </head>
@@ -38,12 +40,12 @@
                     {% endif %}
                 </li>
                 <li class="nav-item">
-                    {% if 'sessions/all/' == request.path %}
-                    <a class="nav-link active" href="#" tabindex="-1">
+                    {% if 'sessions/past_sessions/' == request.path %}
+                    <a class="nav-link active" href="{% url 'past_sessions' %}" tabindex="-1">
                         Past Sessions
                     </a>
                     {% else %}
-                    <a class="nav-link" href="#" tabindex="-1">
+                    <a class="nav-link" href="{% url 'past_sessions' %}" tabindex="-1">
                         Past Sessions
                     </a>
                     {% endif %}
@@ -51,11 +53,11 @@
                 <li class="nav-item">
                     {% if '/plans/edit/' == request.path %}
                     <a class="nav-link" href="{% url 'edit_plan' %}" tabindex="-1">
-                        Edit Plan
+                        My Plan
                     </a>
                     {% else %}
                     <a class="nav-link" href="{% url 'edit_plan' %}" tabindex="-1">
-                        Edit Plan
+                        My Plan
                     </a>
                     {% endif %}
                 </li>

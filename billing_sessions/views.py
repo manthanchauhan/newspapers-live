@@ -196,3 +196,8 @@ def end_session(request):
     return redirect('home')
 
 
+class PastSessions(LoginRequiredMixin, View):
+    template = 'billing_sessions/all_sessions.html'
+
+    def get(self, request):
+        return render(request, self.template)
