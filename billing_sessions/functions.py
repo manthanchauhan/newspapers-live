@@ -76,7 +76,7 @@ def create_calendars(start_date, session):
 
     first_calendar = Calendar(session=session, start=start_date)
 
-    if datetime.now().month != first_calendar.start.month or datetime.now().year != first_calendar.start.month:
+    if datetime.now().month != first_calendar.start.month or datetime.now().year != first_calendar.start.year:
         end = monthrange(first_calendar.start.year, first_calendar.start.month)[1]
         end = datetime.strptime(str(end) + '-' + str(first_calendar.start.month) + '-' + str(first_calendar.start.year), '%d-%m-%Y').date()
         first_calendar.end = end
@@ -157,3 +157,16 @@ class Counter:
 
     def reset(self):
         self._count = 0
+
+
+def count_absentees(calendar):
+    absentees = calendar.absentees
+    count = 0
+    mask = 1
+
+    while mask <= absentees:
+        if absentees & mask:
+            count += 1
+        mask <<= 1
+
+    return count

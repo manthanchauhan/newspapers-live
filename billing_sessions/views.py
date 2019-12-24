@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from billing_sessions.forms import SessionCreationForm
 from billing_sessions.models import BillingSession
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
 from calendar import monthrange
@@ -9,6 +10,7 @@ from plans.models import Plan
 from calendars.models import Calendar
 from billing_sessions.functions import create_calendars, calculate_bill, previous_calendar
 from billing_sessions.functions import next_calendar, month_name, toggle_absent_status
+from billing_sessions.functions import count_absentees
 
 # Create your views here.
 
@@ -29,10 +31,20 @@ class Home(LoginRequiredMixin, View):
 
         if user.current_session_id is not None:
             amount = current_session.amount
+
+            try:
+                previous_session = BillingSession.objects.get(id=current_session.prev_session)
+            except BillingSession.DoesNotExist:
+                previous_session = None
             calendars = list(current_session.calendars.all())
 
             if id is not None:
+                recent_cal = list(current_session.calendars.all())[-1]
                 calendar = Calendar.objects.get(id=id)
+
+                if calendar == recent_cal:
+                    return redirect('home')
+
                 monthly_amount = calendar.amount
             else:
                 present_date = datetime.now()
@@ -116,6 +128,7 @@ class Home(LoginRequiredMixin, View):
                                                    'next': next_id,
                                                    'month_name': month_name(calendar.start.month),
                                                    'year_name': str(calendar.start.year)[-2:],
+                                                   'previous_session': previous_session,
                                                    })
 
         form = SessionCreationForm(user=request.user)
@@ -135,6 +148,9 @@ class Home(LoginRequiredMixin, View):
             toggle_absent_status(calendar_id, date, request.user)
             return redirect('calendar', id=calendar_id)
 
+        if 'end_session' in request.POST.keys():
+            return end_session(request)
+
         form = SessionCreationForm(request.POST, user=request.user)
 
         if form.is_valid():
@@ -147,3 +163,34 @@ class Home(LoginRequiredMixin, View):
 def try_func(request, id):
     print(id)
     return None
+
+
+def end_session(request):
+    user = request.user
+    current_session_id = user.current_session_id
+    current_session = BillingSession.objects.get(id=current_session_id)
+
+    if current_session is None:
+        messages.error(request, 'Invalid request')
+        return redirect('home')
+
+    current_session.end = datetime.now().date()
+    absentees = 0
+    calendars = list(current_session.calendars.all())
+
+    for calendar in calendars:
+        absentees += count_absentees(calendar)
+
+    current_session.absentees = absentees
+    current_session.save()
+
+    if current_session.start == datetime.now().date():
+        current_session.delete()
+
+    user.current_session_id = None
+    user.save()
+
+    for calendar in calendars:
+        calendar.delete()
+
+    return redirect('home')

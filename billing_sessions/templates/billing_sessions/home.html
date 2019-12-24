@@ -136,34 +136,21 @@
 				This month: <b>Rs. {{monthly_amount}}</b>
 			</p>
 			
-		<form>
-			<input type="submit" class="btn btn-success" value="End Session">
+		<form method="post">
+			{% csrf_token %}
+			<input type="submit" name="end_session" class="btn btn-success" value="End Session">
 		</form>
 		<hr>
-
+		
+		{% if previous_session %}
 		<div class="card" style="margin-bottom: 10px;">
   			<div class="card-body" style="padding: 10px;">
-    			<span style="margin: 0px;">Rs. 156</span>
-    			<p class="lead text-center" style="margin: 0px;">1/9/19 - 30/9/19</p>
-    			<span style="margin: 0px;">3 absentees</span>
+    			<span style="margin: 0px;">Rs. {{previous_session.amount}}</span>
+    			<p class="text-center text-small" style="margin: 0px;">{{previous_session.start}} - {{previous_session.end}}</p>
+    			<span style="margin: 0px;">{{previous_session.absentees}} absentees</span>
   			</div>
 		</div>
-
-		<div class="card" style="margin-bottom: 10px;">
-  			<div class="card-body" style="padding: 10px;">
-  				<span style="margin: 0px;">Rs. 145</span>
-    			<p class="lead text-center" style="margin: 0px;">1/8/19 - 31/8/19</p>
-    			<span style="margin: 0px;">4 absentees</span>
-  			</div>
-		</div>
-
-		<div class="card" style="margin-bottom: 10px;">
-  			<div class="card-body" style="padding: 10px;">
-  				<span style="margin: 0px;">Rs. 169</span>
-    			<p class="lead text-center" style="margin: 0px;">1/7/19 - 30/7/19</p>
-    			<span style="margin: 0px;">0 absentees</span>
-  			</div>
-		</div>
+		{% endif %}
 		</div>
 		</div>
 {% endif %}
