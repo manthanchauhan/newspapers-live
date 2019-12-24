@@ -194,3 +194,5 @@ def end_session(request):
         calendar.delete()
 
     return redirect('home')
+
+
