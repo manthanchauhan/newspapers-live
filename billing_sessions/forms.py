@@ -28,7 +28,10 @@ class SessionCreationForm(ModelForm):
     def save(self, commit=True):
         session = super(SessionCreationForm, self).save(commit=False)
         session.user = self.user
-        session.prev_session = BillingSession.objects.filter(user=self.user).last().id
+        try:
+            session.prev_session = BillingSession.objects.filter(user=self.user).last().id
+        except AttributeError:
+            session.prev_session = None
         session.save()
         amount = create_calendars(self.cleaned_data['start'], session)
         session.amount = amount
