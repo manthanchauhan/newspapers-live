@@ -29,7 +29,7 @@
                         {{ request.user.username }}
                     </a>
                 </li>
-                {% if new %}
+                {% if not new %}
                 <li class="nav-item">
                     {% if '/sessions/home/' == request.path %}
                     <a class="nav-link active" href="{% url 'home' %}" tabindex="-1">
