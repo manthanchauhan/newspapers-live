@@ -83,7 +83,7 @@
 					{% csrf_token %}
 						<input type="number" name="calendar_id" value="{{calendar_id}}" hidden>
 					{% for row in days %}
-						<tr style="margin:0px;">
+						<tr style="margin:0px;padding:0px;">
 							{% for day in row %}
 								{% if day.status == "disabled" %}
 								<td><button class="h-100 btn-block btn date btn-warning col-12 text-muted" disabled>*</button></td>
