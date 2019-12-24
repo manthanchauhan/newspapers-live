@@ -21,15 +21,24 @@
                 </div>
                 {% endfor %}
             {% else %}
-            <label class="col-form-label col-3 col-md-2" style="margin-right:10px;">{{field.label_tag}}</label>
-                {% render_field field class="form-control col-7 col-md-4" %}
+            
+                {% if editable %}
+                <label class="col-form-label col-3 col-md-2" style="margin-right:10px;">{{field.label_tag}}</label>
+                    {% render_field field class="form-control col-7 col-md-4" %}
+                {% else %}
+                <label class="col-form-label col-3 col-md-2" style="margin-right:10px;">{{field.label_tag}}</label>
+                    {% render_field field class="form-control col-7 col-md-4" disabled="disabled" %}
+                {% endif %}
             {% endif %}
             {% if field.help_text %}
                 <small class="form-text text-muted">{{ field.help_text }}</small>
             {% endif %}
         </div>
         {% endfor %}
-        <div class="row justify-content-center">
+        {% if not editable %}
+            <small class="form-text text-danger text-center">Plan cannot be edited with open an session.</small>
+        {% endif %}
+        <div class="row justify-content-center" style="margin-top:15px;margin-bottom:15px;">
             <input type="submit" class="btn btn-success" value="Submit">
             <div class="col-1"></div>
             <input class="btn btn-danger" type="submit" value="Clear">
