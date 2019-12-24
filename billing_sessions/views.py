@@ -200,4 +200,9 @@ class PastSessions(LoginRequiredMixin, View):
     template = 'billing_sessions/all_sessions.html'
 
     def get(self, request):
-        return render(request, self.template)
+        sessions = list(BillingSession.objects.filter(user=request.user))
+
+        if sessions:
+            sessions = sessions[:-1]
+
+        return render(request, self.template, {'sessions': sessions})
