@@ -37,3 +37,10 @@ class SignUp(View):
             return redirect('after_login')
         else:
             return render(request, self.template, {'form': form})
+
+
+class AboutUs(View):
+    template = 'accounts/about.html'
+
+    def get(self, request):
+        return render(request, self.template)

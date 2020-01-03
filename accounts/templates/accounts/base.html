@@ -7,11 +7,11 @@
     <title>{% block title %}{% endblock title %}</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark" style="margin-bottom: 15px;">
+<nav class="navbar navbar-expand navbar-dark bg-dark" style="margin-bottom: 15px;">
     <div class="container">
         <a class="navbar-brand" href="#">Newspapers</a>
 
-        <div id="navbarSupportedContent">
+        <div id="navbarSupportedContent" >
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">
@@ -19,6 +19,7 @@
                         {% endblock page_name %}
                     </a>
                 </li>
+                {% block links %}{% endblock links %}
             </ul>
         </div>
     </div>

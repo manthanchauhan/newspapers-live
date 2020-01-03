@@ -1,0 +1,32 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Newspapers | About Us{% endblock title %}
+{% block page_name %}About Us{% endblock page_name %}
+
+{% block links %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'signup' %}" tabindex="-1">Signup</a>
+</li>
+{% endblock links %}
+
+{% block content %}
+<h2>What do we do?</h2>
+<p>Newspapers is service which allows you to mark your newspaper as present or absent each day, so that when
+    your newspaper vendor comes for payment, you don't need to calculate the bill yourself.
+</p>
+<h2>How to get started?</h2>
+<p>Follow the steps to enjoy this amazing service.</p>
+<strong>Step 1: Signup</strong>
+<p>To signup, fill <a href="{% url 'signup' %}">this</a> really small form.</p>
+<strong>Step 2: Plan Upload</strong>
+<p>Signed up? cool. Now go to <a href="{% url 'create_plan' %}">this</a> page and upload your weekly newspaper plan.<br>
+Now you are all set to automate your newspaper billings forever :).</p>
+<strong>Step 3: Starting Session</strong>
+<p>We call billing cycle a session. To start a session, go to the <a href="{% url 'home' %}">home</a> page
+and click "Start new session". Enter the date from which your newspaper billing starts, and press "Start
+Session".<br>
+Great! you have started your session. You are now ready to mark any date as absent whenever you miss your
+newspaper.</p>
+<strong>Step 4: Marking absentees</strong>
+<p>Whenever you do not get your newspaper, go to your <a href="{% url 'home' %}">home</a> page and tap the date to change its status,
+marking it absent.</p>
+{% endblock content %}

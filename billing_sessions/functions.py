@@ -58,10 +58,10 @@ def toggle_absent_status(calendar_id, date, user):
     session.save()
 
 
-def create_calendars(start_date, session):
-    session_amount = 0
+def create_calendars(start_date, session, in_place=False):
+    # decide which calendars are to be created Tuple(month, year)
     present_date = datetime.now()
-    calendars = list()
+    calendars = []
 
     if start_date.year < present_date.year:
         for month in range(start_date.month, 13):
@@ -74,34 +74,36 @@ def create_calendars(start_date, session):
         for month in range(start_date.month, present_date.month+1):
             calendars.append((month, start_date.year))
 
-    first_calendar = Calendar(session=session, start=start_date)
+    total_calendars = len(calendars)
+    # calendars = List[Tuple(month:int, year:int)]
+    # calendars only contains newly created calendars
 
-    if datetime.now().month != first_calendar.start.month or datetime.now().year != first_calendar.start.year:
-        end = monthrange(first_calendar.start.year, first_calendar.start.month)[1]
-        end = datetime.strptime(str(end) + '-' + str(first_calendar.start.month) + '-' + str(first_calendar.start.year), '%d-%m-%Y').date()
-        first_calendar.end = end
-
+    # update session amount
+    additional_session_amount = 0
     plan = Plan.objects.get(user=session.user)
-    amount = calculate_bill(first_calendar, plan)
-    session_amount += amount
-    first_calendar.amount = amount
-    first_calendar.save()
 
-    if len(calendars) > 1:
-        for calendar in calendars[1:]:
+    for index, calendar in enumerate(calendars):
+        # for each calendar
+        if index == 0:
+            start = start_date
+        else:
             start = datetime.strptime('01-' + str(calendar[0]) + '-' + str(calendar[1]), '%d-%m-%Y').date()
-            cal = Calendar(session=session, start=start)
 
-            if calendar != calendars[-1]:
-                end = monthrange(calendar[1], calendar[0])[1]
-                end = datetime.strptime(str(end) + '-' + str(calendar[0]) + '-' + str(calendar[1]), '%d-%m-%Y').date()
-                cal.end = end
+        cal = Calendar(session=session, start_date=start)
 
-            cal.amount = calculate_bill(cal, plan)
-            session_amount += cal.amount
-            cal.save()
+        if index != total_calendars-1:
+            # if calendar isn't the last calendar to be created
+            # end the current calendar
+            end = monthrange(calendar[1], calendar[0])[1]
+            end = datetime.strptime(str(end) + '-' + str(calendar[0]) + '-' + str(calendar[1]), '%d-%m-%Y').date()
+            cal.end = end
 
-    return session_amount
+        # update session amount
+        cal.amount = calculate_bill(cal, plan)
+        cal.save()
+        additional_session_amount += cal.amount
+
+    return additional_session_amount
 
 
 def previous_calendar(calendar, calendars):
@@ -170,3 +172,11 @@ def count_absentees(calendar):
         mask <<= 1
 
     return count
+
+
+def end_calendar(calendar):
+    end = monthrange(calendar.start.month, calendar.start.year)[1]
+    end = datetime.strptime(str(end) + '-' + str(calendar.start.month) + '-' + str(calendar.start.year),
+                            '%d-%m-%Y').date()
+    calendar.end = end
+    calendar.save()

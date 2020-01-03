@@ -8,7 +8,7 @@ from datetime import datetime
 from calendar import monthrange
 from plans.models import Plan
 from calendars.models import Calendar
-from billing_sessions.functions import create_calendars, calculate_bill, previous_calendar
+from billing_sessions.functions import create_calendars, calculate_bill, previous_calendar, end_calendar
 from billing_sessions.functions import next_calendar, month_name, toggle_absent_status
 from billing_sessions.functions import count_absentees
 
@@ -41,6 +41,7 @@ class Home(LoginRequiredMixin, View):
             if id is not None:
                 recent_cal = list(current_session.calendars.all())[-1]
                 calendar = Calendar.objects.get(id=id)
+                print(calendar.absentees)
 
                 if calendar == recent_cal:
                     return redirect('home')
@@ -53,11 +54,12 @@ class Home(LoginRequiredMixin, View):
 
                 if last_month != present_date.month or last_year != present_date.year:
                     if last_month == 12:
-                        start_date = datetime.strptime('01-' + str(1) + '-' + str(last_year+1))
+                        start_date = datetime.strptime('01-' + str(1) + '-' + str(last_year+1), '%d-%m-%Y').date()
                     else:
-                        start_date = datetime.strptime('01-' + str(last_month+1) + '-' + str(last_year))
+                        start_date = datetime.strptime('01-' + str(last_month+1) + '-' + str(last_year), '%d-%m-%Y').date()
 
-                    create_calendars(start_date, current_session)
+                    end_calendar(calendars[-1])
+                    create_calendars(start_date, current_session, in_place=True)
 
                 calendars = list(current_session.calendars.all())
                 calendar = calendars[-1]
