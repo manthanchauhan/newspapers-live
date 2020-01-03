@@ -89,7 +89,7 @@ def create_calendars(start_date, session, in_place=False):
         else:
             start = datetime.strptime('01-' + str(calendar[0]) + '-' + str(calendar[1]), '%d-%m-%Y').date()
 
-        cal = Calendar(session=session, start_date=start)
+        cal = Calendar(session=session, start=start)
 
         if index != total_calendars-1:
             # if calendar isn't the last calendar to be created
