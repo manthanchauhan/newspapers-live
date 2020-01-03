@@ -205,7 +205,7 @@ class PastSessions(LoginRequiredMixin, View):
     def get(self, request):
         sessions = list(BillingSession.objects.filter(user=request.user))
 
-        if sessions:
+        if sessions and request.user.current_session_id is not None:
             sessions = sessions[:-1]
 
         return render(request, self.template, {'sessions': sessions})

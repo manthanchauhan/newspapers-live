@@ -4,15 +4,23 @@
 {% block title %}Newspapers | Home{% endblock title %}
 
 {% block content %}
-    {% if not current_session %}
-    <p class="lead text-center" style="margin-top: 15px;">No open sessions found</p>
-    <div class="row justify-content-center">
-        <button class="btn btn-success" data-target="#exampleModal" data-toggle="modal">
-            Start new session
-        </button>
+	<!-- Modals -->
+	<div class="modal fade" id="ConfirmEndModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    style="max-width:100%;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            	<div class="modal-body row justify-content-center" style="padding:15px 0px 15px 0px;margin:0px;">
+				<p style="margin-bottom:0px;" class="text-danger">This action is permanent. &nbsp</p>
+				<p>Do you want to end your current session?</p>
+				<form method="post">
+					{% csrf_token %}
+					<input type="submit" class="btn btn-danger" name="end_session" value="End Session">
+					<button class="btn btn-success" data-dismiss="modal">Cancel</button>
+				</form>
+				</div>
+			</div>
+        </div>
     </div>
-
-    <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
     style="max-width:100%;">
         <div class="modal-dialog" role="document">
@@ -50,6 +58,13 @@
         </div>
     </div>
 </div>
+{% if not current_session %}
+    <p class="lead text-center" style="margin-top: 15px;">No open sessions found</p>
+    <div class="row justify-content-center">
+        <button class="btn btn-success" data-target="#exampleModal" data-toggle="modal">
+            Start new session
+        </button>
+    </div>
 {% else %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'billing_sessions/css/home_calendar.css' %}">
@@ -129,10 +144,7 @@
 				This month: <b>Rs. {{monthly_amount}}</b>
 			</p>
 			
-		<form method="post">
-			{% csrf_token %}
-			<input type="submit" name="end_session" class="btn btn-success" value="End Session">
-		</form>
+		<button type="button" id="end_modal_trigger" data-target="#ConfirmEndModal" data-toggle="modal" class="btn btn-success">End Session</button>
 		<hr>
 		
 		{% if previous_session %}
