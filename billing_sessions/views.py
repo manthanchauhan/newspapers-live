@@ -65,13 +65,13 @@ class Home(LoginRequiredMixin, View):
                 calendar = calendars[-1]
 
                 plan = Plan.objects.get(user=user)
+                old_monthly_amount = calendar.amount
                 monthly_amount = calculate_bill(calendar, plan)
-                difference = monthly_amount - calendar.amount
-                calendar.amount = monthly_amount
+                difference = monthly_amount - old_monthly_amount
                 current_session.amount += difference
                 current_session.save()
                 calendar.save()
-                amount = current_session.amount
+                amount += difference
 
             calendar_id = calendar.id
             prev = previous_calendar(calendar, calendars)
