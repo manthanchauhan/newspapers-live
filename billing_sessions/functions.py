@@ -175,7 +175,7 @@ def count_absentees(calendar):
 
 
 def end_calendar(calendar):
-    end = monthrange(calendar.start.month, calendar.start.year)[1]
+    end = monthrange(calendar.start.year, calendar.start.month)[1]
     end = datetime.strptime(str(end) + '-' + str(calendar.start.month) + '-' + str(calendar.start.year),
                             '%d-%m-%Y').date()
     calendar.end = end
