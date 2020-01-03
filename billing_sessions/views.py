@@ -71,6 +71,7 @@ class Home(LoginRequiredMixin, View):
                 current_session.amount += difference
                 current_session.save()
                 calendar.save()
+                amount = current_session.amount
 
             calendar_id = calendar.id
             prev = previous_calendar(calendar, calendars)
