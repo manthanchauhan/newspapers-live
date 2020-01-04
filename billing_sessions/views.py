@@ -41,7 +41,6 @@ class Home(LoginRequiredMixin, View):
             if id is not None:
                 recent_cal = list(current_session.calendars.all())[-1]
                 calendar = Calendar.objects.get(id=id)
-                print(calendar.absentees)
 
                 if calendar == recent_cal:
                     return redirect('home')
@@ -67,10 +66,12 @@ class Home(LoginRequiredMixin, View):
                 plan = Plan.objects.get(user=user)
                 old_monthly_amount = calendar.amount
                 monthly_amount = calculate_bill(calendar, plan)
+                calendar.amount = monthly_amount
+                calendar.save()
+
                 difference = monthly_amount - old_monthly_amount
                 current_session.amount += difference
                 current_session.save()
-                calendar.save()
                 amount += difference
 
             calendar_id = calendar.id

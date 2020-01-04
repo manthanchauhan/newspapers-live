@@ -1,3 +1,7 @@
 .nav-link:focus{
     outline-style:none;
 }
+
+.alert:focus{
+    outline-style:none;
+}
