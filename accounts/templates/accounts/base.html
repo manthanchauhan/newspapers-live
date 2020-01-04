@@ -40,17 +40,17 @@
     <div style="display:block;text-align:center;padding:0px;">
         {% if message.tags == "error" %}
         <div class="alert alert-danger alert-dismissible fade show col-md-6" role="alert"
-        style="display: inline-block;margin-left: auto;margin-right: auto; text-align: left;">
+        style="display: inline-block;margin-left: auto;margin-right: auto; text-align: left; padding-right:30px;">
             {{message|safe}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="padding-left:5px;">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
         {% else %}
         <div class="alert alert-{{message.tags}} alert-dismissible fade show col-md-6" role="alert"
-        style="display: inline-block;margin-left: auto;margin-right: auto; text-align: left;">
+        style="display: inline-block;margin-left: auto;margin-right: auto; text-align: left; padding-right:30px;">
             {{message|safe}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="padding-left:5px;">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
