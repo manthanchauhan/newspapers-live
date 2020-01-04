@@ -6,10 +6,12 @@
 {% block page_name %}Login{% endblock page_name %}
 
 {% block content %}
-    <form method="post" action="    ">
+<div style="display:block; text-align:center; padding:0px;">
+    <form method="post" action="" style="display:inline-block; text-align:left; margin-left:auto;
+    margin-right:auto;" class="col-md-6">
     {% csrf_token %}
         {% for field in form.visible_fields %}
-        <div class="form-group col-md-6" style="padding-left:0px;padding-right:0px;">
+        <div class="form-group" style="padding-left:0px;padding-right:0px;">
     
     {% if field.errors %}
         <label class="col-12" style="margin-left:0px;padding-left:0px;padding-right:0px;">{{field.label_tag}}
@@ -32,6 +34,7 @@
     {% endfor %}
     <input type="submit" value="Login" class="btn btn-success">
     </form>
+</div>
     {% if form.errors %}
         {% for error in form.non_field_errors %}
         <span class="text-danger form-text">{{error}}</span>

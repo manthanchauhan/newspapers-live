@@ -4,6 +4,7 @@
       <w>endblock</w>
       <w>endfor</w>
       <w>endwhile</w>
+      <w>fernet</w>
       <w>navbar</w>
       <w>newspaperboy</w>
       <w>postgresql</w>

@@ -6,7 +6,7 @@
 {% block page_name %} Signup {% endblock page_name %}
 
 {% block content %}
-<form method="post" action="{% url 'signup' %}">
+<form method="post" action="">
     {% csrf_token %}
     
     {% for field in form.visible_fields %}
@@ -17,9 +17,9 @@
             {% render_field field class="form-control is-invalid" %}
         </label>
         {% for error in field.errors %}
-          <div class="invalid-feedback">
-            {{ error }}
-          </div>
+        <ul>
+            <li class="text-danger"><small>{{error}}</small></li>
+        </ul>
         {% endfor %}
     {% else %}
        <label class="col-12" style="margin-left:0px;padding-left:0px;padding-right:0px;">{{field.label_tag}}
