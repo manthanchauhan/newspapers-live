@@ -28,6 +28,9 @@ class SignUp(View):
     template = 'accounts/signup.html'
 
     def get(self, request, encoded_email, encrypted_hash):
+        encrypted_hash.replace('slash', '/')
+        encoded_email.replace('slash', '/')
+
         # verify link authenticity
         if not check_data(config('SIGNUP_EMAIL_PHRASE'), encrypted_hash):
             messages.error(request, 'Invalid link')
@@ -44,6 +47,7 @@ class SignUp(View):
         return render(request, self.template, {'form': form, 'email': email})
 
     def post(self, request, encoded_email, encrypted_hash):
+        encoded_email.replace('slash', '/')
         data = {}
 
         for key, value in request.POST.items():
@@ -82,7 +86,9 @@ class EnterEmail(View):
         email_id = request.POST['email_id'].strip()
         pass_phrase = config('SIGNUP_EMAIL_ENCODING_SECRET')
         encoded_email = encode_data(pass_phrase, email_id)
+        encoded_email.replace('/', 'slash')
         encrypted_hash = encrypt_data(config('SIGNUP_EMAIL_PHRASE'))
+        encrypted_hash.replace('/', 'slash')
 
         base_url = request.scheme + '://' + request.get_host() + '/accounts/signup/'
         link = base_url + encoded_email + '/' + encrypted_hash + '/'
@@ -91,7 +97,7 @@ class EnterEmail(View):
         send_mail(subject='Newspapers signup link', message=message_body,
                   from_email=settings.EMAIL_HOST_USER, recipient_list=[email_id])
 
-        messages.info(request,'Check your mail for signup link.')
+        messages.info(request, 'Check your mail for signup link.')
         return redirect('signup')
 
 
