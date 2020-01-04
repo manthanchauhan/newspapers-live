@@ -2,6 +2,6 @@
     outline-style:none;
 }
 
-.alert:focus{
-    outline-style:none;
+.close:focus{
+    outline:0;
 }

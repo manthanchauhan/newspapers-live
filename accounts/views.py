@@ -20,6 +20,7 @@ def after_login(request):
         user = CustomUser.objects.get(username=request.user.username)
         var = user.plan
     except ObjectDoesNotExist:
+        messages.info(request, 'Upload your weekly newspaper plan.')
         return redirect('plans/create_plan')
     return redirect('sessions/home')
 
