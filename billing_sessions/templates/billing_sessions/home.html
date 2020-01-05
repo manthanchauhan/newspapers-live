@@ -10,12 +10,36 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             	<div class="modal-body row justify-content-center" style="padding:15px 0px 15px 0px;margin:0px;">
-				<p style="margin-bottom:0px;" class="text-danger">This action is permanent! &nbsp</p>
-				<p>Do you want to end your current session?</p>
+				<p style="margin-bottom:5px;" class="text-danger">This action is permanent! &nbsp</p>
+<!--				<p>Do you want to end your current session?</p>-->
 				<form method="post">
 					{% csrf_token %}
-					<input type="submit" class="btn btn-danger" name="end_session" value="End Session">
-					<button class="btn btn-success" data-dismiss="modal">Cancel</button>
+					
+					{% for field in end_form.visible_fields %}
+					<div class="form-group form-row justify-content-center">
+						<label class="col-form-label col-md-2 col-2" >{{field.label_tag}}</label>
+						{% if field.errors %}
+							{% render_field field class="form-control is-invalid" %}
+							
+							<ul>
+							{% for error in field.errors %}
+								<li class="text-danger"><small>{{error}}</small></li>
+							{% endfor %}
+							</ul>
+						{% else %}
+							{% render_field field class="form-control col-md-4 col-5" %}
+						{% endif %}
+						{% if field.help_text %}
+      						<small class="form-text text-muted">{{ field.help_text }}</small>
+    					{% endif %}
+					</div>
+					{% endfor %}
+					
+					<div class="row justify-content-center">
+						<input type="submit" class="btn btn-danger" name="end_session" value="End Session"
+							   style="margin:5px;">
+						<button class="btn btn-success" data-dismiss="modal" style="margin:5px;">Cancel</button>
+					</div>
 				</form>
 				</div>
 			</div>

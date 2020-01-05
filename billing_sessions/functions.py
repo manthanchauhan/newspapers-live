@@ -4,12 +4,40 @@ from calendar import monthrange
 from plans.models import Plan
 
 
-def calculate_bill(calendar, bill):
+def calculate_bill(calendar, plan, start_date=None):
+    """
+    calculate newspaper cost
+    :param calendar: calendar object
+    :param plan: newspaper_plan object
+    :param start_date: date to start billing from
+    :return: bill cost
+    """
     if calendar.start > datetime.now().date():
         raise ValueError
 
-    costs = list(bill.to_dict().values())
-    start_day = calendar.start.day
+    if start_date is not None:
+        if start_date.year < calendar.start.year:
+            start_date = None
+        elif start_date.year == calendar.start.year:
+            if start_date.month < calendar.start.month:
+                start_date = None
+            elif start_date.month == calendar.start.month:
+                start_date = start_date.day
+            else:
+                return 0
+        else:
+            return 0
+
+    # start_date == None; start_date doesn't matter
+    # start_date is after calendar, return 0
+    # else start_date is the day from which billing starts
+
+    costs = list(plan.to_dict().values())
+
+    if start_date is None:
+        start_day = calendar.start.day
+    else:
+        start_day = start_date
 
     if calendar.end is not None:
         end_day = calendar.end.day
@@ -161,15 +189,43 @@ class Counter:
         self._count = 0
 
 
-def count_absentees(calendar):
+def count_absentees(calendar, last_date=None):
+    """
+    counts total number of absentees
+    :param calendar: calendar object
+    :param last_date: date up-to which absentees are to be considered
+    :return:
+    """
+    if last_date is not None:
+        if last_date.year > calendar.start.year:
+            last_date = None
+        elif last_date.year == calendar.start.year:
+            if last_date.month > calendar.start.month:
+                last_date = None
+            elif last_date.month == calendar.start.month:
+                last_date = last_date.day
+            else:
+                return 0
+        else:
+            return 0
+
+    # if last_data = None; means last_date is after current calendar
+    # return 0; in-case last_date already passed
+    # else last_date = day up-to which absentees are counted
+
     absentees = calendar.absentees
     count = 0
     mask = 1
+    date = 1
 
     while mask <= absentees:
+        if last_date is not None and date > last_date:
+            break
+
         if absentees & mask:
             count += 1
         mask <<= 1
+        date += 1
 
     return count
 

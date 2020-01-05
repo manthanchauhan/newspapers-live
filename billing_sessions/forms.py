@@ -1,9 +1,13 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, Form
 from django.forms import ValidationError
 from datetime import datetime
-from django.contrib import messages
+from django import forms
 from billing_sessions.functions import create_calendars
 from billing_sessions.models import BillingSession
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 
 class SessionCreationForm(ModelForm):
@@ -59,3 +63,30 @@ class SessionCreationForm(ModelForm):
             if start < most_recent.end:
                 raise ValidationError("New session must start after the end of last session.")
             return start
+
+
+class EndSessionForm(Form):
+    session = None
+
+    date = forms.DateField(label='End on', initial=datetime.now().date(),
+                           help_text='The session will include this date\'s cost',
+                           widget=DateInput)
+
+    def __init__(self, *args, **kwargs):
+        # set form session
+        self.session = kwargs['session']
+
+        kwargs2 = {}
+        for key, value in kwargs.items():
+            if key != 'session':
+                kwargs2[key] = value
+
+        super(EndSessionForm, self).__init__(*args, **kwargs2)
+
+    def clean_date(self):
+        date = self.cleaned_data['date']
+
+        if date > datetime.now().date() or date < self.session.start:
+            raise ValidationError('Provided date is outside the session.')
+
+        return date

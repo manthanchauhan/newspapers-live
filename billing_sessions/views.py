@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from billing_sessions.forms import SessionCreationForm
+from billing_sessions.forms import SessionCreationForm, EndSessionForm
 from billing_sessions.models import BillingSession
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime
+from datetime import timedelta
 from calendar import monthrange
 from plans.models import Plan
 from calendars.models import Calendar
@@ -122,7 +123,11 @@ class Home(LoginRequiredMixin, View):
                 days = [days[0:7], days[7:14], days[14:21], days[21:28], days[28:35], days[35:]]
             else:
                 days = [days[0:7], days[7:14], days[14:21], days[21:28], days[28:]]
+
+            end_form = EndSessionForm(session=current_session)
+
             return render(request, self.template, {'current_session': current_session,
+                                                   'end_form': end_form,
                                                    'days': days,
                                                    'date': calendars[0].start.strftime('%d/%m/%y'),
                                                    'amount': amount,
@@ -146,14 +151,14 @@ class Home(LoginRequiredMixin, View):
         if 'next' in request.POST.keys():
             return redirect('calendar', id=request.POST['next'])
 
+        if 'end_session' in request.POST.keys():
+            return end_session(request)
+
         if 'date' in request.POST.keys():
             date = request.POST['date']
             calendar_id = request.POST['calendar_id']
             toggle_absent_status(calendar_id, date, request.user)
             return redirect('calendar', id=calendar_id)
-
-        if 'end_session' in request.POST.keys():
-            return end_session(request)
 
         form = SessionCreationForm(request.POST, user=request.user)
 
@@ -170,6 +175,7 @@ def try_func(request, id):
 
 
 def end_session(request):
+    # find session to end
     user = request.user
     current_session_id = user.current_session_id
     current_session = BillingSession.objects.get(id=current_session_id)
@@ -178,25 +184,78 @@ def end_session(request):
         messages.error(request, 'Invalid request')
         return redirect('home')
 
-    current_session.end = datetime.now().date()
-    absentees = 0
-    calendars = list(current_session.calendars.all())
+    # check for valid end_session form
+    form = EndSessionForm(request.POST, session=current_session)
 
-    for calendar in calendars:
-        absentees += count_absentees(calendar)
+    if form.is_valid():
+        last_date = form.cleaned_data['date']
+        current_session.end = last_date
+        absentees = 0
+        calendars = list(current_session.calendars.all())
 
-    current_session.absentees = absentees
-    current_session.save()
+        # filter excluded calendars
+        excluded_calendars = []
+        included_calendars = []
 
-    if current_session.start == datetime.now().date():
-        current_session.delete()
+        for calendar in calendars:
+            if calendar.start.year > last_date.year:
+                excluded_calendars.append(calendar)
+            elif calendar.start.year == last_date.year and calendar.start.month > last_date.month:
+                excluded_calendars.append(calendar)
+            else:
+                included_calendars.append(calendar)
 
-    user.current_session_id = None
-    user.save()
+        # calculate session absentees
+        for calendar in included_calendars:
+            absentees += count_absentees(calendar, last_date=last_date)
 
-    for calendar in calendars:
-        calendar.delete()
+        current_session.absentees = absentees
 
+        # calculate session amount
+        excluded_amount = 0
+
+        for calendar in excluded_calendars:
+            excluded_amount += calendar.amount
+
+        plan = Plan.objects.get(user=user)
+        last_excluded = calculate_bill(included_calendars[-1], plan,
+                                          last_date + timedelta(days=1))
+        excluded_amount += last_excluded
+
+        current_session.amount -= excluded_amount
+        current_session.save()
+
+        # delete useless sessions
+        if current_session.start == datetime.now().date():
+            current_session.delete()
+
+        # modify user and delete useless calendars
+        user.current_session_id = None
+        user.save()
+
+        for calendar in included_calendars[:-1]:
+            calendar.delete()
+
+        # create new session from excluded_calendars
+        new_session = BillingSession(user=user, start=last_date+timedelta(days=1),
+                                     prev_session=current_session.id, amount=excluded_amount)
+        new_session.save()
+
+        first_calendar = included_calendars[-1]
+        first_calendar.start = last_date+timedelta(days=1)
+        first_calendar.session = new_session
+        first_calendar.amount = last_excluded
+        first_calendar.save()
+
+        for calendar in excluded_calendars:
+            calendar.session = new_session
+            calendar.save()
+
+        user.current_session_id = new_session.id
+        user.save()
+    else:
+        for error in form.errors:
+            messages.error(request, error)
     return redirect('home')
 
 
@@ -208,5 +267,8 @@ class PastSessions(LoginRequiredMixin, View):
 
         if sessions and request.user.current_session_id is not None:
             sessions = sessions[:-1]
+
+        if sessions:
+            sessions = sessions[::-1]
 
         return render(request, self.template, {'sessions': sessions})
