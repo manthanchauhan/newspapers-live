@@ -9,17 +9,19 @@
     style="max-width:100%;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-            	<div class="modal-body row justify-content-center" style="padding:15px 0px 15px 0px;margin:0px;">
-				<p style="margin-bottom:5px;" class="text-danger">This action is permanent! &nbsp</p>
+            	<div class="modal-body">
+				<p style="margin-bottom:5px;text-align:center;" class="text-danger">This action is permanent! &nbsp</p>
 <!--				<p>Do you want to end your current session?</p>-->
-				<form method="post">
+				<div style="display:block; text-align:center; padding:0px;">
+				<form method="post" style="display:inline-block; text-align:left; margin-left:auto; margin-right:auto;"
+				class="col-10">
 					{% csrf_token %}
 					
 					{% for field in end_form.visible_fields %}
 					<div class="form-group form-row justify-content-center">
-						<label class="col-form-label col-md-2 col-2" >{{field.label_tag}}</label>
+						<label class="col-form-label col-3" >{{field.label_tag}}</label>
 						{% if field.errors %}
-							{% render_field field class="form-control is-invalid" %}
+							{% render_field field class="form-control is-invalid col-8" %}
 							
 							<ul>
 							{% for error in field.errors %}
@@ -27,7 +29,7 @@
 							{% endfor %}
 							</ul>
 						{% else %}
-							{% render_field field class="form-control col-md-4 col-5" %}
+							{% render_field field class="form-control col-8" %}
 						{% endif %}
 						{% if field.help_text %}
       						<small class="form-text text-muted">{{ field.help_text }}</small>
@@ -41,6 +43,7 @@
 						<button class="btn btn-success" data-dismiss="modal" style="margin:5px;">Cancel</button>
 					</div>
 				</form>
+				</div>
 				</div>
 			</div>
         </div>
