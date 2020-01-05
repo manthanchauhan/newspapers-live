@@ -11,13 +11,16 @@
     <p class="lead text-center">This is your weekly newspaper plan.</p>
     {% endif %}
     
-    <form class="form-horizontal" method="post" action="{% url 'create_plan' %}">
+    <div style="display:block; text-align:center; padding:0px;">
+    <form class="form-horizontal col-12 col-md-6" method="post" action="{% url 'create_plan' %}"
+    style="display:block-inline; text-align:left; margin-left:auto; margin-right:auto; padding:0px;">
         {% csrf_token %}
         {% for field in form.visible_fields %}
-        <div class="form-row form-group justify-content-center">
+        {% if field.label_tag != "Billing date" %}
+        <div class="form-row form-group col-12" style="margin:5px;">
             {% if field.errors %}
-            <label class="col-form-label col-3 col-md-2">{{field.label_tag}}</label>
-                {% render_field field class="form-control col-7 col-md-4 is-invalid" %}
+            <label class="col-form-label col-4">{{field.label_tag}}</label>
+                {% render_field field class="form-control col-7 is-invalid" %}
                 {% for error in field.errors %}
                 <div class="invalid-feedback">
                     {{ error }}
@@ -26,17 +29,18 @@
             {% else %}
             
                 {% if editable %}
-                <label class="col-form-label col-3 col-md-2" style="margin-right:10px;">{{field.label_tag}}</label>
-                    {% render_field field class="form-control col-7 col-md-4" %}
+                <label class="col-form-label col-4" style="margin-right:10px;">{{field.label_tag}}</label>
+                    {% render_field field class="form-control col-7" %}
                 {% else %}
-                <label class="col-form-label col-3 col-md-2" style="margin-right:10px;">{{field.label_tag}}</label>
-                    {% render_field field class="form-control col-7 col-md-4" disabled="disabled" %}
+                <label class="col-form-label col-4" style="margin-right:10px;">{{field.label_tag}}</label>
+                    {% render_field field class="form-control col-7" disabled="disabled" %}
                 {% endif %}
             {% endif %}
             {% if field.help_text %}
                 <small class="form-text text-muted">{{ field.help_text }}</small>
             {% endif %}
         </div>
+        {% endif %}
         {% endfor %}
         {% if not editable %}
             <small class="form-text text-danger text-center">Plan cannot be edited with an open session.</small>
@@ -48,5 +52,6 @@
         </div>
         {% endif %}
     </form>
+    </div>
 </div>
 {% endblock content %}

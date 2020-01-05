@@ -12,6 +12,8 @@ class Plan(models.Model):
     thursday = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(100)])
     friday = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(100)])
     saturday = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    billing_date = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(31)],
+                                       null=True)
 
     user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE, related_name='plan')
 
