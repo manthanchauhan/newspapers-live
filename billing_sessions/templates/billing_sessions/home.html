@@ -19,7 +19,7 @@
 					
 					{% for field in end_form.visible_fields %}
 					<div class="form-group form-row justify-content-center">
-						<label class="col-form-label col-3" >{{field.label_tag}}</label>
+						<label class="col-form-label col-4 col-md-3" >{{field.label_tag}}</label>
 						{% if field.errors %}
 							{% render_field field class="form-control is-invalid col-8" %}
 							
