@@ -11,6 +11,7 @@ from django.utils.html import format_html
 import functions
 from django.template.loader import render_to_string
 
+
 # Create your views here.
 
 
@@ -76,6 +77,9 @@ class AboutUs(View):
 
 
 class EnterEmail(View):
+    """
+    this view manages the Get Verification Link page: /accounts/signup/
+    """
     template = 'accounts/enter_email.html'
     email = 'accounts/code_email.html'
 
@@ -84,6 +88,13 @@ class EnterEmail(View):
 
     def post(self, request):
         email_id = request.POST['email_id'].strip()
+
+        # check if email already exists
+        if CustomUser.objects.filter(email=email_id).count():
+            # the user exists
+            messages.info(request, 'This email is already in use, login <a href="' + reverse('login') + '">here</a>.')
+            return render(request, self.template)
+
         pass_phrase = config('SIGNUP_EMAIL_ENCODING_SECRET')
         encoded_email = encode_data(pass_phrase, email_id)
         encoded_email = encoded_email.replace('/', 'slash')
@@ -101,4 +112,47 @@ class EnterEmail(View):
         messages.info(request, 'Check your mail for signup link.')
         return redirect('signup')
 
+
+class PasswordResetEnterEmail(View):
+    """
+    initiates the forgot password/credentials process
+    """
+    template = 'accounts/forgot_password_enter_email.html'
+
+    def get(self, request):
+        return render(request, self.template)
+
+    def post(self, request):
+        email = request.POST['email_id'].strip()
+
+        # check if user exists
+        if not CustomUser.objects.filter(email=email).count():
+            messages.error(request, 'User with this email does not exists, signup <a href="' + reverse('signup') +
+                           '">here</a>.')
+            return render(request, self.template)
+
+        # get username using email
+        user = CustomUser.objects.get(email=email)
+        username = user.username
+
+        # create password reset link
+        encoded_link = request.scheme + '://' + request.get_host() + '/accounts/password_reset/' + encode_data(
+            config('PASSWORD_RESET_PHRASE'), email) + '/'
+
+        # send password reset email
+        message = render_to_string('accounts/password_reset_email.html',
+                                   {'username': username, 'reset_link': encoded_link})
+        functions.send_mail(to_emails=[email], content=message, subject='Reset Password')
+
+        messages.success(request, 'Check your mail for password reset link.')
+        return render(request, self.template)
+
+
+class CreateNewPassword(View):
+    """
+    Resets the user password
+    """
+    def get(self, encoded_email):
+        # TODO
+        pass
 

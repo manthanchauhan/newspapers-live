@@ -21,5 +21,7 @@ def send_mail(to_emails, content, subject):
 
     # send email and catch the response
     response = sg.send(message=email)
-    print(response.status_code)
+
+    # send status
+    return response == 202
 

@@ -7,8 +7,9 @@
 
 {% block content %}
 <div style="display:block; text-align:center; padding:0px;">
-    <form method="post" action="" style="display:inline-block; text-align:left; margin-left:auto;
+    <div style="display:inline-block; text-align:left; margin-left:auto;
     margin-right:auto;" class="col-md-6">
+    <form method="post" action="">
     {% csrf_token %}
         {% for field in form.visible_fields %}
         <div class="form-group" style="padding-left:0px;padding-right:0px;">
@@ -33,15 +34,19 @@
     </div>
     {% endfor %}
     <input type="submit" value="Login" class="btn btn-success">
-    </form>
+    </form><br>
+       <small class="text-muted col-md-6" style="padding-left:0px;">Forgot password? Click
+           <a href="{% url 'password_reset_enter_email' %}">here</a>.
+       </small>
+    </div>
 </div>
     {% if form.errors %}
         {% for error in form.non_field_errors %}
         <span class="text-danger form-text">{{error}}</span>
         {% endfor %}
     {% endif %}
-    <br>
-    <p class="lead text-center">Do no have an account yet?<br>
+    <hr>
+    <p class="lead text-center">Do not have an account yet?<br>
     Signup <a href="{% url 'signup' %}">here</a>
     </p>
 {% endblock content %}

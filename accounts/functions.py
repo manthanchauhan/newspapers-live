@@ -23,6 +23,7 @@ def generate_key(pass_phrase):
 def encode_data(pass_phrase, data):
     """
     This function encodes data into a string.
+    :rtype: str
     :param pass_phrase: a random string to be used for decoding.
     :param data: string (you'll receive the same string using "decode_data()").
     :return: string, list data in encoded form
