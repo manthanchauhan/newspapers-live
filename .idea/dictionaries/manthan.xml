@@ -8,6 +8,7 @@
       <w>navbar</w>
       <w>newspaperboy</w>
       <w>postgresql</w>
+      <w>sendgrid</w>
     </words>
   </dictionary>
 </component>

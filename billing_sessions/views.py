@@ -237,15 +237,21 @@ def end_session(request):
             calendar.delete()
 
         # create new session from excluded_calendars
-        new_session = BillingSession(user=user, start=last_date+timedelta(days=1),
-                                     prev_session=current_session.id, amount=excluded_amount)
+        start_date = last_date + timedelta(days=1)
+        new_session = BillingSession(user=user, start=start_date, prev_session=current_session.id,
+                                     amount=excluded_amount)
         new_session.save()
 
+        # decide whether to keep partial calendar
         first_calendar = included_calendars[-1]
-        first_calendar.start = last_date+timedelta(days=1)
-        first_calendar.session = new_session
-        first_calendar.amount = last_excluded
-        first_calendar.save()
+
+        if start_date.month == first_calendar.month:
+            first_calendar.start = last_date+timedelta(days=1)
+            first_calendar.session = new_session
+            first_calendar.amount = last_excluded
+            first_calendar.save()
+        else:
+            first_calendar.delete()
 
         for calendar in excluded_calendars:
             calendar.session = new_session

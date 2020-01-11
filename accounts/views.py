@@ -8,8 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .functions import encode_data, encrypt_data, check_data, decode_data
 from decouple import config
 from django.utils.html import format_html
-from django.core.mail import send_mail
-from django.conf import settings
+import functions
 from django.template.loader import render_to_string
 
 # Create your views here.
@@ -95,8 +94,8 @@ class EnterEmail(View):
         link = base_url + encoded_email + '/' + encrypted_hash + '/'
 
         message_body = render_to_string(self.email, {'signup_link': link})
-        send_mail(subject='Newspapers signup link', message=message_body,
-                  from_email=settings.EMAIL_HOST_USER, recipient_list=[email_id])
+
+        functions.send_mail(to_emails=[email_id], content=message_body, subject='Newspapers Invite')
 
         messages.info(request, 'Check your mail for signup link.')
         return redirect('signup')

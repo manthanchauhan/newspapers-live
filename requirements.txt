@@ -10,7 +10,9 @@ gunicorn==20.0.4
 passlib==1.7.2
 psycopg2==2.8.4
 pycparser==2.19
+python-http-client==3.2.1
 pytz==2019.3
+sendgrid==6.1.0
 six==1.13.0
 sqlparse==0.3.0
 whitenoise==4.1.4
