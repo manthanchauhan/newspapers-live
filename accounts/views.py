@@ -95,6 +95,7 @@ class EnterEmail(View):
 
         message_body = render_to_string(self.email, {'signup_link': link})
 
+        # sending email
         functions.send_mail(to_emails=[email_id], content=message_body, subject='Newspapers Invite')
 
         messages.info(request, 'Check your mail for signup link.')
