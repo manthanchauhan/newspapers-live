@@ -1,0 +1,23 @@
+{% load widget_tweaks %}
+{% for field in form.visible_fields %}
+<div class="form-group" style="padding-left:0px;padding-right:0px;">
+
+{% if field.errors %}
+    <label class="col-12" style="margin-left:0px;padding-left:0px;padding-right:0px;">{{field.label_tag}}
+        {% render_field field class="form-control is-invalid" %}
+    </label>
+    {% for error in field.errors %}
+      <div class="invalid-feedback">
+        {{ error }}
+      </div>
+    {% endfor %}
+{% else %}
+   <label class="col-12" style="margin-left:0px;padding-left:0px;padding-right:0px;">{{field.label_tag}}
+        {% render_field field class="form-control" %}
+    </label>
+{% endif %}
+{% if field.help_text %}
+  <small class="form-text text-muted">{{ field.help_text }}</small>
+{% endif %}
+</div>
+{% endfor %}

@@ -78,7 +78,7 @@ class AboutUs(View):
 
 class EnterEmail(View):
     """
-    this view manages the Get Verification Link page: /accounts/signup/
+    this view manages the Get Signup Link page: /accounts/signup/
     """
     template = 'accounts/enter_email.html'
     email = 'accounts/code_email.html'
@@ -150,9 +150,18 @@ class PasswordResetEnterEmail(View):
 
 class CreateNewPassword(View):
     """
-    Resets the user password
+    creates a new user password
     """
     def get(self, encoded_email):
         # TODO
         pass
 
+
+def password_reset_done(request):
+    """
+    called after sending password resend link
+    :param request: request
+    :return: redirects to same page but with a success message
+    """
+    messages.success(request, "We've sent you a mail.")
+    return redirect('password_reset')
