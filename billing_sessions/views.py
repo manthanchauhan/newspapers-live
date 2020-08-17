@@ -37,14 +37,21 @@ class Home(LoginRequiredMixin, View):
 
         if user.current_session_id is not None:
             amount = current_session.amount
-
             try:
                 previous_session = BillingSession.objects.get(
                     id=current_session.prev_session
                 )
             except BillingSession.DoesNotExist:
                 previous_session = None
+
             calendars = list(current_session.calendars.all())
+
+            if not calendars:
+                calendar = Calendar(session=current_session)
+                calendar.save()
+                calendars.append(calendar)
+
+            print(calendars)
 
             if id is not None:
                 recent_cal = list(current_session.calendars.all())[-1]
@@ -206,7 +213,6 @@ def end_session(request):
     # find session to end
     user = request.user
     current_session_id = user.current_session_id
-    print(current_session_id)
     current_session = BillingSession.objects.get(id=current_session_id)
 
     if current_session is None:
@@ -216,89 +222,90 @@ def end_session(request):
     # check for valid end_session form
     form = EndSessionForm(request.POST, session=current_session)
 
-    if form.is_valid():
-        last_date = form.cleaned_data["date"]
-        current_session.end = last_date
-        absentees = 0
-        calendars = list(current_session.calendars.all())
-
-        # filter excluded calendars
-        excluded_calendars = []
-        included_calendars = []
-
-        for calendar in calendars:
-            if calendar.start.year > last_date.year:
-                excluded_calendars.append(calendar)
-            elif (
-                calendar.start.year == last_date.year
-                and calendar.start.month > last_date.month
-            ):
-                excluded_calendars.append(calendar)
-            else:
-                included_calendars.append(calendar)
-
-        # calculate session absentees
-        for calendar in included_calendars:
-            absentees += count_absentees(calendar, last_date=last_date)
-
-        current_session.absentees = absentees
-
-        # calculate session amount
-        excluded_amount = 0
-
-        for calendar in excluded_calendars:
-            excluded_amount += calendar.amount
-
-        plan = Plan.objects.get(user=user)
-        last_excluded = calculate_bill(
-            included_calendars[-1], plan, last_date + timedelta(days=1)
-        )
-        excluded_amount += last_excluded
-
-        current_session.amount -= excluded_amount
-        current_session.save()
-
-        # delete useless sessions
-        if current_session.start == datetime.now().date():
-            current_session.delete()
-
-        # modify user and delete useless calendars
-        user.current_session_id = None
-        user.save()
-
-        for calendar in included_calendars[:-1]:
-            calendar.delete()
-
-        # create new session from excluded_calendars
-        start_date = last_date + timedelta(days=1)
-        new_session = BillingSession(
-            user=user,
-            start=start_date,
-            prev_session=current_session.id,
-            amount=excluded_amount,
-        )
-        new_session.save()
-
-        # decide whether to keep partial calendar
-        first_calendar = included_calendars[-1]
-
-        if start_date.month == first_calendar.start.month:
-            first_calendar.start = last_date + timedelta(days=1)
-            first_calendar.session = new_session
-            first_calendar.amount = last_excluded
-            first_calendar.save()
-        else:
-            first_calendar.delete()
-
-        for calendar in excluded_calendars:
-            calendar.session = new_session
-            calendar.save()
-
-        user.current_session_id = new_session.id
-        user.save()
-    else:
+    if not form.is_valid():
         for error in form.errors:
             messages.error(request, error)
+
+    last_date = form.cleaned_data["date"]
+    current_session.end = last_date
+    absentees = 0
+    calendars = list(current_session.calendars.all())
+
+    # filter excluded calendars
+    # excluded calendars are those which lie outside the session to be deleted
+    excluded_calendars = []
+    included_calendars = []
+
+    for calendar in calendars:
+        if calendar.start.year > last_date.year:
+            excluded_calendars.append(calendar)
+        elif (
+            calendar.start.year == last_date.year
+            and calendar.start.month > last_date.month
+        ):
+            excluded_calendars.append(calendar)
+        else:
+            included_calendars.append(calendar)
+
+    # calculate session absentees
+    for calendar in included_calendars:
+        absentees += count_absentees(calendar, last_date=last_date)
+
+    current_session.absentees = absentees
+
+    # calculate session amount
+    excluded_amount = 0
+
+    for calendar in excluded_calendars:
+        excluded_amount += calendar.amount
+
+    plan = Plan.objects.get(user=user)
+    last_excluded = calculate_bill(
+        included_calendars[-1], plan, last_date + timedelta(days=1)
+    )
+    excluded_amount += last_excluded
+
+    current_session.amount -= excluded_amount
+    current_session.save()
+
+    # delete useless sessions
+    if current_session.start == datetime.now().date():
+        current_session.delete()
+
+    # modify user and delete useless calendars
+    user.current_session_id = None
+    user.save()
+
+    for calendar in included_calendars[:-1]:
+        calendar.delete()
+
+    # create new session from excluded_calendars
+    start_date = last_date + timedelta(days=1)
+    new_session = BillingSession(
+        user=user,
+        start=start_date,
+        prev_session=current_session.id,
+        amount=excluded_amount,
+    )
+    new_session.save()
+
+    # decide whether to keep partial calendar
+    first_calendar = included_calendars[-1]
+
+    if start_date.month == first_calendar.start.month:
+        first_calendar.start = last_date + timedelta(days=1)
+        first_calendar.session = new_session
+        first_calendar.amount = last_excluded
+        first_calendar.save()
+    else:
+        first_calendar.delete()
+
+    for calendar in excluded_calendars:
+        calendar.session = new_session
+        calendar.save()
+
+    user.current_session_id = new_session.id
+    user.save()
     return redirect("home")
 
 

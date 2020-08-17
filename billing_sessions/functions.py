@@ -13,7 +13,7 @@ def calculate_bill(calendar, plan, start_date=None):
     :return: bill cost
     """
     if calendar.start > datetime.now().date():
-        raise ValueError
+        return 0
 
     if start_date is not None:
         if start_date.year < calendar.start.year:

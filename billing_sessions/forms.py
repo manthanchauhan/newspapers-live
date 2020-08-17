@@ -91,10 +91,9 @@ class EndSessionForm(Form):
 
         super(EndSessionForm, self).__init__(*args, **kwargs2)
 
-    def clean_date(self):
-        date = self.cleaned_data["date"]
+    def validate(self):
+        super(EndSessionForm, self).validate()
+        delete_date = self.cleaned_data["date"]
 
-        if date > datetime.now().date() or date < self.session.start:
+        if delete_date > datetime.now().date() or delete_date < self.session.start:
             raise ValidationError("Provided date is outside the session.")
-
-        return date
