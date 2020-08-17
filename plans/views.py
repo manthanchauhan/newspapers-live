@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 class CreatePlan(LoginRequiredMixin, View):
-    template = 'plans/create_plan.html'
+    template = "plans/create_plan.html"
 
     def get(self, request):
         try:
@@ -17,7 +17,9 @@ class CreatePlan(LoginRequiredMixin, View):
             form = PlanCreationForm(instance=plan, user=request.user)
         except ObjectDoesNotExist:
             form = PlanCreationForm(user=request.user)
-        return render(request, self.template, {'form': form, 'editable': True, 'new': True})
+        return render(
+            request, self.template, {"form": form, "editable": True, "new": True}
+        )
 
     def post(self, request):
         try:
@@ -28,17 +30,22 @@ class CreatePlan(LoginRequiredMixin, View):
 
         if form.is_valid():
             form.save()
-            return redirect('/sessions/home')
+            return redirect("/sessions/home")
         else:
-            return render(request, self.template, {'form': form, 'editable': True, 'new': True})
+            return render(
+                request, self.template, {"form": form, "editable": True, "new": True}
+            )
 
 
 class EditPlan(LoginRequiredMixin, View):
-    template = 'plans/create_plan.html'
+    template = "plans/create_plan.html"
 
     def get(self, request):
         current_session_id = not bool(request.user.current_session_id)
         plan = request.user.plan
         form = PlanCreationForm(instance=plan, user=request.user)
-        return render(request, self.template, {'form': form, 'editable': current_session_id, 'new': False})
-
+        return render(
+            request,
+            self.template,
+            {"form": form, "editable": current_session_id, "new": False},
+        )

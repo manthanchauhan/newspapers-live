@@ -18,9 +18,9 @@ from django.urls import path, include
 from accounts.views import after_login
 
 urlpatterns = [
-    path('', after_login, name='after_login'),
-    path('plans/', include('plans.urls')),
-    path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
-    path('sessions/', include('billing_sessions.urls')),
+    path("", after_login, name="after_login"),
+    path("plans/", include("plans.urls")),
+    path("admin/", admin.site.urls),
+    path("accounts/", include("accounts.urls")),
+    path("sessions/", include("billing_sessions.urls")),
 ]

@@ -11,22 +11,49 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('billing_sessions', '0001_initial'),
+        ("billing_sessions", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Calendar',
+            name="Calendar",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start', models.DateField(default=django.utils.timezone.now)),
-                ('end', models.DateField(null=True)),
-                ('absentees', models.IntegerField(default=0, validators=[django.core.validators.MaxValueValidator(2147483647)])),
-                ('amount', models.FloatField(default=0, validators=[django.core.validators.MinValueValidator(0)])),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='calendars', to='billing_sessions.BillingSession')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("start", models.DateField(default=django.utils.timezone.now)),
+                ("end", models.DateField(null=True)),
+                (
+                    "absentees",
+                    models.IntegerField(
+                        default=0,
+                        validators=[
+                            django.core.validators.MaxValueValidator(2147483647)
+                        ],
+                    ),
+                ),
+                (
+                    "amount",
+                    models.FloatField(
+                        default=0,
+                        validators=[django.core.validators.MinValueValidator(0)],
+                    ),
+                ),
+                (
+                    "session",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="calendars",
+                        to="billing_sessions.BillingSession",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ['start'],
-            },
+            options={"ordering": ["start"],},
         ),
     ]

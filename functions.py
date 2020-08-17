@@ -2,6 +2,7 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from decouple import config
 from django.conf import settings
+from django.core.mail import send_mail as send_mail_
 
 
 def send_mail(to_emails, content, subject):
@@ -12,16 +13,13 @@ def send_mail(to_emails, content, subject):
     :param subject: subject of the email
     :return:
     """
-    # create sendgrid client
-    sg = SendGridAPIClient(config('SEND_GRID_API_KEY'))
+    if isinstance(to_emails, str):
+        to_emails = [to_emails]
 
-    # create a Mail object to send
-    email = Mail(from_email=settings.EMAIL_HOST_USER, to_emails=to_emails, subject=subject,
-                 html_content=content)
-
-    # send email and catch the response
-    response = sg.send(message=email)
-
-    # send status
-    return response == 202
-
+    send_mail_(
+        subject=subject,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=to_emails,
+        message="",
+        html_message=content,
+    )

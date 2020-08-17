@@ -17,17 +17,42 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='BillingSession',
+            name="BillingSession",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start', models.DateField(default=django.utils.timezone.now)),
-                ('end', models.DateField(null=True)),
-                ('absentees', models.IntegerField(default=0, validators=[django.core.validators.MaxValueValidator(31)])),
-                ('amount', models.FloatField(default=0, validators=[django.core.validators.MinValueValidator(0)])),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sessions', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("start", models.DateField(default=django.utils.timezone.now)),
+                ("end", models.DateField(null=True)),
+                (
+                    "absentees",
+                    models.IntegerField(
+                        default=0,
+                        validators=[django.core.validators.MaxValueValidator(31)],
+                    ),
+                ),
+                (
+                    "amount",
+                    models.FloatField(
+                        default=0,
+                        validators=[django.core.validators.MinValueValidator(0)],
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sessions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
-            options={
-                'ordering': ['start'],
-            },
+            options={"ordering": ["start"],},
         ),
     ]

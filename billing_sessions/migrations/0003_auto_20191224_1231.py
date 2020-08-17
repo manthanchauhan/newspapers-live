@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('billing_sessions', '0002_billingsession_prev_session'),
+        ("billing_sessions", "0002_billingsession_prev_session"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='billingsession',
-            name='end',
+            model_name="billingsession",
+            name="end",
             field=models.DateField(blank=True, null=True),
         ),
     ]

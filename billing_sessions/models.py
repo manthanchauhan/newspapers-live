@@ -7,7 +7,9 @@ from accounts.models import CustomUser
 
 
 class BillingSession(models.Model):
-    user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE, related_name='sessions')
+    user = models.ForeignKey(
+        to=CustomUser, on_delete=models.CASCADE, related_name="sessions"
+    )
     start = models.DateField(default=now)
     end = models.DateField(null=True, blank=True)
     absentees = models.IntegerField(default=0, validators=[MaxValueValidator(31)])
@@ -15,4 +17,4 @@ class BillingSession(models.Model):
     prev_session = models.IntegerField(null=True, unique=True)
 
     class Meta:
-        ordering = ['start']
+        ordering = ["start"]

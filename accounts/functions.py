@@ -8,13 +8,13 @@ from passlib.context import CryptContext
 
 def generate_key(pass_phrase):
     password = pass_phrase.encode()
-    salt = b'\xa2K\x8f\x1b\xb5\xd6\x0f\x91\x8eT1\xfd\x95B\x19_'
+    salt = b"\xa2K\x8f\x1b\xb5\xd6\x0f\x91\x8eT1\xfd\x95B\x19_"
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
         iterations=100000,
-        backend=default_backend()
+        backend=default_backend(),
     )
     key = base64.urlsafe_b64encode(kdf.derive(password))
     return key
@@ -30,13 +30,13 @@ def encode_data(pass_phrase, data):
     """
     # create a fernet key
     key = generate_key(pass_phrase)
-    encoded_data = ''
+    encoded_data = ""
     f = Fernet(key)
 
     # encode data
     data_value = data.encode()
     encoded_form = f.encrypt(data_value)
-    encoded_data += encoded_form.decode('utf-8')
+    encoded_data += encoded_form.decode("utf-8")
 
     return encoded_data
 
@@ -49,10 +49,11 @@ def encrypt_data(password) -> str:
     """
     # define a context for hashing
     # we can later hide this in some .env file
-    context = CryptContext(schemes=['pbkdf2_sha256'],
-                           default='pbkdf2_sha256',
-                           pbkdf2_sha256__default_rounds=32752,
-                           )
+    context = CryptContext(
+        schemes=["pbkdf2_sha256"],
+        default="pbkdf2_sha256",
+        pbkdf2_sha256__default_rounds=32752,
+    )
     return context.encrypt(password)
 
 
@@ -63,10 +64,11 @@ def check_data(user_provided, encrypted) -> bool:
     :param encrypted: password hash stored in db during signup.
     :return: True/False
     """
-    context = CryptContext(schemes=['pbkdf2_sha256'],
-                           default='pbkdf2_sha256',
-                           pbkdf2_sha256__default_rounds=32752,
-                           )
+    context = CryptContext(
+        schemes=["pbkdf2_sha256"],
+        default="pbkdf2_sha256",
+        pbkdf2_sha256__default_rounds=32752,
+    )
     try:
         ans = context.verify(user_provided, encrypted)
     except ValueError:
@@ -79,6 +81,7 @@ def decode_data(pass_phrase, encoded_data):
     key = generate_key(pass_phrase)
 
     from cryptography.fernet import Fernet
+
     f = Fernet(key)
 
     decoded_form = f.decrypt(str.encode(encoded_data))
