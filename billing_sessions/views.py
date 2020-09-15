@@ -51,8 +51,6 @@ class Home(LoginRequiredMixin, View):
                 calendar.save()
                 calendars.append(calendar)
 
-            print(calendars)
-
             if id is not None:
                 recent_cal = list(current_session.calendars.all())[-1]
                 calendar = Calendar.objects.get(id=id)
@@ -211,6 +209,7 @@ def try_func(request, id):
 
 def end_session(request):
     # find session to end
+    start_new_session = request.POST.get("start_new_session", False)
     user = request.user
     current_session_id = user.current_session_id
     current_session = BillingSession.objects.get(id=current_session_id)
@@ -278,6 +277,9 @@ def end_session(request):
 
     for calendar in included_calendars[:-1]:
         calendar.delete()
+
+    if not start_new_session:
+        return redirect("home")
 
     # create new session from excluded_calendars
     start_date = last_date + timedelta(days=1)

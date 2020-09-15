@@ -16,6 +16,8 @@ from django.template.loader import render_to_string
 
 
 def after_login(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
     try:
         user = CustomUser.objects.get(username=request.user.username)
         var = user.plan

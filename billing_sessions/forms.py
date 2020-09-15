@@ -33,7 +33,7 @@ class SessionCreationForm(ModelForm):
         session.user = self.user
         try:
             session.prev_session = (
-                BillingSession.objects.filter(user=self.user).last().id
+                BillingSession.objects.filter(user=self.user).order_by("end").last().id
             )
         except AttributeError:
             session.prev_session = None
