@@ -1,6 +1,6 @@
 asgiref==3.2.3
 cffi==1.13.2
-cryptography==2.8
+cryptography==3.2
 dj-database-url==0.5.0
 Django==3.0.7
 django-decouple==2.1
